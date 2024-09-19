@@ -1,49 +1,58 @@
+// screens/HomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
-import moment from 'moment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { getSchedules } from '../database/scheduleDB';
 
-export default function HomeScreen({ navigation }) {
-  const [agendamentos, setAgendamentos] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
+const HomeScreen = ({ navigation }) => {
+    const [schedules, setSchedules] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  useEffect(() => {
-    const fetchAgendamentos = async () => {
-      const storedAgendamentos = await AsyncStorage.getItem('agendamentos');
-      if (storedAgendamentos) {
-        setAgendamentos(JSON.parse(storedAgendamentos));
-      }
-    };
-    fetchAgendamentos();
-  }, []);
+    useEffect(() => {
+        const fetchSchedules = async () => {
+            try {
+                const schedulesData = await getSchedules(selectedDate);
+                setSchedules(schedulesData);
+            } catch (error) {
+                console.error('Erro ao buscar agendamentos:', error);
+            }
+        };
 
-  const agendamentosDoDia = agendamentos.filter(agendamento => agendamento.data === selectedDate);
+        fetchSchedules();
 
-  const handleNovoAgendamento = () => {
-    navigation.navigate('Agendamento');
-  };
+        // Adicionando um listener para atualizar a tela ao voltar para ela
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchSchedules();
+        });
 
-  const isAtrasado = (horario) => {
-    const agora = moment();
-    return moment(horario, 'HH:mm').isBefore(agora);
-  };
+        // Cleanup do listener
+        return unsubscribe;
+    }, [navigation, selectedDate]);
 
-  return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text>Agendamentos para {selectedDate}</Text>
-      <FlatList
-        data={agendamentosDoDia}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={{ marginVertical: 10, padding: 15, backgroundColor: isAtrasado(item.horario) ? 'red' : 'green' }}>
-            <Text>{item.nomeCliente} - {item.servico}</Text>
-            <Text>{item.horario}</Text>
-          </View>
-        )}
-      />
-      <TouchableOpacity onPress={handleNovoAgendamento} style={{ backgroundColor: 'blue', padding: 15, marginTop: 20 }}>
-        <Text style={{ color: 'white' }}>Novo Agendamento</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
+    const renderItem = ({ item }) => (
+        <TouchableOpacity onPress={() => navigation.navigate('AddSchedule', { schedule: item })}>
+            <View style={{
+                padding: 20,
+                marginVertical: 8,
+                backgroundColor: new Date(`${item.date}T${item.time}`) < new Date() ? 'red' : 'green'
+            }}>
+                <Text>{item.time} - {item.name}</Text>
+                <Text>Serviço: {item.service}</Text>
+            </View>
+        </TouchableOpacity>
+    );
+
+    return (
+        <View style={{ flex: 1 }}>
+            <TouchableOpacity onPress={() => navigation.navigate('AddSchedule')}>
+                <Text style={{ fontSize: 20, color: 'blue', textAlign: 'center', margin: 20 }}>Novo Agendamento</Text>
+            </TouchableOpacity>
+            <FlatList
+                data={schedules}
+                renderItem={renderItem}
+                keyExtractor={item => item.id.toString()}
+            />
+        </View>
+    );
+};
+
+export default HomeScreen;

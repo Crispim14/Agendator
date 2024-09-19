@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Agendator",
-    "slug": "Agendator",
+    "name": "testeAgendator",
+    "slug": "testeAgendator",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
