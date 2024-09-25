@@ -13,16 +13,44 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [time, setTime] = useState(schedule.time || '');
     const [service, setService] = useState(schedule.service || '');
     const [professional, setProfessional] = useState(schedule.professional || '');
+    const [msgError, setMsgError] = useState('');
 
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
 
-   
+    const checkErros = ()=>{
+        let error = true;
+        if (!name.trim()) {
+            setMsgError('Digite um nome para continuar');
+            
+        }else if (!phone.trim()) {
+            setMsgError('Digite um telefone para continuar');
+           
+        } else if (!time) {
+            setMsgError('Digite o horario  continuar');
+           
+        }  else if (!service.trim()) {
+            setMsgError('Digite um serviço para continuar');
+           
+        } else if (!professional.trim()) {
+            setMsgError('Digite o nome de um profissional continuar');
+          
+        }else {
+            error = false
+            setMsgError(''); // Limpa a mensagem de erro se o nome estiver preenchido
+            
+        }
+
+        return error
+    }
 
     const saveSchedule = async () => {
         try {
 
+            if(checkErros()==true){
+                return;
+            }
             const now = new Date();
             const selectedDateTime = new Date(date);
             const [hours, minutes] = time.split(':').map(Number);
@@ -149,7 +177,8 @@ const AddScheduleScreen = ({ route, navigation }) => {
                     onChange={onChangeTime}
                 />
             )}
-            <Text>{time}</Text>
+              <Txt text={time}/>
+            
 
             <Txt text={'Serviço:'}/>
             <TextInput value={service} onChangeText={setService} style={{ borderBottomWidth: 1, marginBottom: 16, color:'#E3E3E3' }} />
@@ -159,6 +188,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
 
             <Button title="Salvar" onPress={saveSchedule} />
             {schedule.id && <Button title="Excluir" onPress={confirmDeleteSchedule} color="red" />}
+            <Txt text={msgError}/>
         </View>
     );
 };
