@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { getSchedules } from '../database/scheduleDB';
+import Txt from '../components/Txt';
 
 const HomeScreen = ({ navigation }) => {
     const [schedules, setSchedules] = useState([]);
@@ -33,18 +34,20 @@ const HomeScreen = ({ navigation }) => {
             <View style={{
                 padding: 20,
                 marginVertical: 8,
-                backgroundColor: new Date(`${item.date}T${item.time}`) < new Date() ? 'red' : 'green'
+                backgroundColor: new Date(`${item.date}T${item.time}`) < new Date() ? 'red' : '#0CABA8'
             }}>
-                <Text>{item.time} - {item.name}</Text>
-                <Text>Serviço: {item.service}</Text>
+         
+                <Txt text={`${item.time} - ${item.name}`}/>
+                <Txt text={`Serviço ${item.service}`}/>
+               
             </View>
         </TouchableOpacity>
     );
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: '#1A2833'  }}>
             <TouchableOpacity onPress={() => navigation.navigate('AddSchedule')}>
-                <Text style={{ fontSize: 20, color: 'blue', textAlign: 'center', margin: 20 }}>Novo Agendamento</Text>
+            <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 20 }}>Novo Agendamento</Text>
             </TouchableOpacity>
             <FlatList
                 data={schedules}

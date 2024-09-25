@@ -16,8 +16,22 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator>
-                <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Agendamentos' }} />
-                <Stack.Screen name="AddSchedule" component={AddScheduleScreen} options={{ title: 'Novo Agendamento' }} />
+                <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Agendamentos', headerStyle: {
+      backgroundColor: '#1A2833'
+   
+    },
+    headerTitleStyle :{
+        color: '#E3E3E3', 
+    }
+    
+    }} />
+                <Stack.Screen name="AddSchedule" component={AddScheduleScreen} options={{ title: 'Novo Agendamento' , headerStyle: {
+      backgroundColor: '#1A2833'
+   
+    },
+    headerTitleStyle :{
+        color: '#E3E3E3', 
+    }}} />
             </Stack.Navigator>
         </NavigationContainer>
     );
