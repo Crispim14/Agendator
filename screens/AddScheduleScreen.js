@@ -1,9 +1,14 @@
 // screens/AddScheduleScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { addSchedule, updateSchedule, deleteSchedule, getSchedules } from '../database/scheduleDB';
 import Txt from '../components/Txt';
+
+
+function showToast(text) {
+    ToastAndroid.show(text, ToastAndroid.SHORT);
+  }
 
 const AddScheduleScreen = ({ route, navigation }) => {
     const schedule = route.params?.schedule || {};
@@ -30,53 +35,66 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [showTimePicker, setShowTimePicker] = useState(false);
 
 
+    const clearFormData = () => {
+        setName('');
+        setPhone('');
+        setDate(new Date()); // Se você quiser definir a data como a data atual
+        setTime('');
+        setService('');
+        setProfessional('');
+    };
+
 
 const clearErrors = () =>{
     setMsgError({
-        nameError: 'Nome inválido',
-        phoneError: 'Telefone inválido',
-        timeError: 'Hora inválida',
-        dateError: 'Data inválida',
-        serviceError: 'Serviço indisponível',
-        professionalError: 'Profissional não encontrado',
+        nameError: '',
+        phoneError: '',
+        timeError: '',
+        dateError: '',
+        serviceError: '',
+        professionalError: '',
       });
       
 }
 
     const checkErros = () => {
-        let error = true;
+
+        clearErrors();
+
+        let error = false;
         if (!name.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
                 nameError: 'Digite um nome para o usuário'
             }));
-        } else if (!phone.trim()) {
+            error = true;
+        } 
+         if (!phone.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
-                phoneError: 'Digite um nome para o usuário'
+                phoneError: 'Digite um número de telefone'
             }));
-        } else if (!date.trim()) {
+            error = true;
+        } 
+        if (!time.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
-                dateError: 'Digite um nome para o usuário'
+                timeError: 'Selecione um horário para o agendamentos'
             }));
-        }
-        else if (!time.trim()) {
-            setMsgError(prevState => ({
-                ...prevState,
-                timeError: 'Digite um nome para o usuário'
-            }));
-        }else if (!service.trim()) {
+            error = true;
+        } if (!service.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
                 serviceError: 'Digite um nome para o usuário'
             }));
+            error = true;
         }
-        else if (!professional.trim()) {
+         if (!professional.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
-                professionalError: 'Digite um nome para o usuário'
+                professionalError: 'Digite um nome para um profissional'
             }));
+            error = true;
         }
 
         return error
@@ -126,11 +144,11 @@ const clearErrors = () =>{
             if (schedule.id) {
                 // Editar
                 await updateSchedule({ ...newSchedule, id: schedule.id });
-                Alert.alert('Sucesso', 'Agendamento atualizado com sucesso');
+                showToast('Cadastro atualizado com sucesso');
             } else {
                 // Novo
                 await addSchedule(newSchedule);
-                Alert.alert('Sucesso', 'Agendamento salvo com sucesso');
+                showToast('Cadastro inserido com sucesso');
             }
             navigation.navigate('Home', { refresh: true });
         } catch (error) {
@@ -155,7 +173,7 @@ const clearErrors = () =>{
         try {
             if (schedule.id) {
                 await deleteSchedule(schedule.id);
-                Alert.alert('Sucesso', 'Agendamento excluído com sucesso');
+                showToast('Cadastro deletado com sucesso');
                 navigation.navigate('Home', { refresh: true });
             }
         } catch (error) {
@@ -180,7 +198,7 @@ const clearErrors = () =>{
         }
     };
 
-
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
     return (
         <View style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
@@ -199,12 +217,13 @@ const clearErrors = () =>{
                 <DateTimePicker
                     value={date}
                     mode="date"
-                    minimumDate={new Date(new Date().setHours(0, 0, 0, 0))}
                     display={Platform.OS === 'ios' ? 'inline' : 'default'}
                     onChange={onChangeDate}
                 />
             )}
-            <Txt text={date.toDateString()} />
+
+
+            <Txt text={date.toLocaleDateString('pt-BR', options)} />
 
 
             <Txt text={'Horário:'} />
@@ -229,11 +248,29 @@ const clearErrors = () =>{
             <Text style={{ color: 'red' }}>{msgError.professionalError}</Text>
             <TextInput value={professional} onChangeText={setProfessional} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
+
+            <Button title="Limpar Campos" onPress={clearFormData } />
+
             <Button title="Salvar" onPress={saveSchedule} />
             {schedule.id && <Button title="Excluir" onPress={confirmDeleteSchedule} color="red" />}
 
+
+
+
         </View>
+        
     );
+
+    const styles = StyleSheet.create({
+        container: {
+          flex: 1,
+          justifyContent: 'center',
+          paddingTop: StatusBar.currentHeight,
+          backgroundColor: '#6638f0',
+          padding: 8,
+        },
+      });
+    
 };
 
 export default AddScheduleScreen;

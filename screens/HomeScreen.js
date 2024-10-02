@@ -1,12 +1,27 @@
 // screens/HomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Button, Platform } from 'react-native';
 import { getSchedules } from '../database/scheduleDB';
 import Txt from '../components/Txt';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+
 
 const HomeScreen = ({ navigation }) => {
     const [schedules, setSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState( new Date());
+
+    const onChangeDate = (event, selectedDate) => {
+        setShowDatePicker(false);
+        console.log(selectedDate)
+        if (selectedDate) {
+            console.log(selectedDate)
+            setDate(selectedDate)
+            setSelectedDate(selectedDate.toISOString().split('T')[0])
+        }
+    };
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     useEffect(() => {
         const fetchSchedules = async () => {
@@ -39,12 +54,7 @@ const HomeScreen = ({ navigation }) => {
             }
             
             }>
-           
-           {   console.log(new Date(`${item.date}T${item.time}`))
-           
-           }
-           {
-            console.log(new Date())}
+        
                 <Txt text={`${item.time} - ${item.name}`}/>
                 <Txt text={`Serviço ${item.service}`}/>
                
@@ -53,9 +63,23 @@ const HomeScreen = ({ navigation }) => {
     );
 
     return (
+        
         <View style={{ flex: 1, backgroundColor: '#1A2833'  }}>
+
+
             <TouchableOpacity onPress={() => navigation.navigate('AddSchedule')}>
+            <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 20 }}>{`Data selecionada ${selectedDate}` }</Text>
             <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 20 }}>Novo Agendamento</Text>
+            <Button title="Mudar data" onPress={() => setShowDatePicker(true)} />
+            {showDatePicker && (
+                <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    onChange={onChangeDate}
+                />
+            )}
+           
             </TouchableOpacity>
             <FlatList
                 data={schedules}
