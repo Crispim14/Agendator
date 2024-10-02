@@ -35,8 +35,16 @@ const HomeScreen = ({ navigation }) => {
                 padding: 20,
                 marginVertical: 8,
                 backgroundColor: new Date(`${item.date}T${item.time}`) < new Date() ? 'red' : '#0CABA8'
-            }}>
-         
+             
+            }
+            
+            }>
+           
+           {   console.log(new Date(`${item.date}T${item.time}`))
+           
+           }
+           {
+            console.log(new Date())}
                 <Txt text={`${item.time} - ${item.name}`}/>
                 <Txt text={`Serviço ${item.service}`}/>
                

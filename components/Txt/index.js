@@ -1,5 +1,5 @@
 import {  Text, StyleSheet } from 'react-native';
-export default function ({text}) {
+export default function Txt({text}) {
   return (
     <Text  style={styles.text}>{text}</Text>
   )

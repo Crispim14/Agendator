@@ -13,33 +13,70 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [time, setTime] = useState(schedule.time || '');
     const [service, setService] = useState(schedule.service || '');
     const [professional, setProfessional] = useState(schedule.professional || '');
-    const [msgError, setMsgError] = useState('');
+
+    const [msgError, setMsgError] = useState({
+        nameError: '',
+        phoneError: '',
+        timeError: '',
+        dateError: '',
+        serviceError: '',
+        professionalError: '',
+
+
+    });
+
 
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
 
-    const checkErros = ()=>{
+
+const clearErrors = () =>{
+    setMsgError({
+        nameError: 'Nome inválido',
+        phoneError: 'Telefone inválido',
+        timeError: 'Hora inválida',
+        dateError: 'Data inválida',
+        serviceError: 'Serviço indisponível',
+        professionalError: 'Profissional não encontrado',
+      });
+      
+}
+
+    const checkErros = () => {
         let error = true;
         if (!name.trim()) {
-            setMsgError('Digite um nome para continuar');
-            
-        }else if (!phone.trim()) {
-            setMsgError('Digite um telefone para continuar');
-           
-        } else if (!time) {
-            setMsgError('Digite o horario  continuar');
-           
-        }  else if (!service.trim()) {
-            setMsgError('Digite um serviço para continuar');
-           
-        } else if (!professional.trim()) {
-            setMsgError('Digite o nome de um profissional continuar');
-          
-        }else {
-            error = false
-            setMsgError(''); // Limpa a mensagem de erro se o nome estiver preenchido
-            
+            setMsgError(prevState => ({
+                ...prevState,
+                nameError: 'Digite um nome para o usuário'
+            }));
+        } else if (!phone.trim()) {
+            setMsgError(prevState => ({
+                ...prevState,
+                phoneError: 'Digite um nome para o usuário'
+            }));
+        } else if (!date.trim()) {
+            setMsgError(prevState => ({
+                ...prevState,
+                dateError: 'Digite um nome para o usuário'
+            }));
+        }
+        else if (!time.trim()) {
+            setMsgError(prevState => ({
+                ...prevState,
+                timeError: 'Digite um nome para o usuário'
+            }));
+        }else if (!service.trim()) {
+            setMsgError(prevState => ({
+                ...prevState,
+                serviceError: 'Digite um nome para o usuário'
+            }));
+        }
+        else if (!professional.trim()) {
+            setMsgError(prevState => ({
+                ...prevState,
+                professionalError: 'Digite um nome para o usuário'
+            }));
         }
 
         return error
@@ -48,7 +85,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const saveSchedule = async () => {
         try {
 
-            if(checkErros()==true){
+            if (checkErros() == true) {
                 return;
             }
             const now = new Date();
@@ -110,7 +147,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
                 { text: "Cancelar", style: "cancel" },
                 { text: "Excluir", style: "destructive", onPress: removeSchedule }
             ],
-            { cancelable: true } 
+            { cancelable: true }
         );
     };
 
@@ -144,30 +181,34 @@ const AddScheduleScreen = ({ route, navigation }) => {
     };
 
 
-        
+
     return (
         <View style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
-            <Txt text={'Nome:'}/>
-            <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16 ,color:'#E3E3E3'}} />
+            <Txt text={'Nome:'} />
+            <Text style={{ color: 'red' }}>{msgError.nameError}</Text>
+            <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
-            <Txt text={'Telefone:'}/>
-            <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16,color:'#E3E3E3' }} />
+            <Txt text={'Telefone:'} />
+            <Text style={{ color: 'red' }}>{msgError.phoneError}</Text>
+            <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
-            <Txt text={'Data:'}/>
+            <Txt text={'Data:'} />
+            <Text style={{ color: 'red' }}>{msgError.dateError}</Text>
             <Button title="Selecionar Data" onPress={() => setShowDatePicker(true)} />
             {showDatePicker && (
                 <DateTimePicker
                     value={date}
                     mode="date"
-                    minimumDate={new Date(new Date().setHours(0, 0, 0, 0))} 
+                    minimumDate={new Date(new Date().setHours(0, 0, 0, 0))}
                     display={Platform.OS === 'ios' ? 'inline' : 'default'}
                     onChange={onChangeDate}
                 />
             )}
-              <Txt text={date.toDateString()}/>
+            <Txt text={date.toDateString()} />
 
 
-            <Txt text={'Horário:'}/>
+            <Txt text={'Horário:'} />
+            <Text style={{ color: 'red' }}>{msgError.timeError}</Text>
             <Button title="Selecionar Horário" onPress={() => setShowTimePicker(true)} />
             {showTimePicker && (
                 <DateTimePicker
@@ -177,18 +218,20 @@ const AddScheduleScreen = ({ route, navigation }) => {
                     onChange={onChangeTime}
                 />
             )}
-              <Txt text={time}/>
-            
+            <Txt text={time} />
 
-            <Txt text={'Serviço:'}/>
-            <TextInput value={service} onChangeText={setService} style={{ borderBottomWidth: 1, marginBottom: 16, color:'#E3E3E3' }} />
 
-            <Txt text={'Profissional:'}/>
-            <TextInput value={professional} onChangeText={setProfessional} style={{ borderBottomWidth: 1, marginBottom: 16,color:'#E3E3E3' }} />
+            <Txt text={'Serviço:'} />
+            <Text style={{ color: 'red' }}>{msgError.serviceError}</Text>
+            <TextInput value={service} onChangeText={setService} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
+
+            <Txt text={'Profissional:'} />
+            <Text style={{ color: 'red' }}>{msgError.professionalError}</Text>
+            <TextInput value={professional} onChangeText={setProfessional} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
             <Button title="Salvar" onPress={saveSchedule} />
             {schedule.id && <Button title="Excluir" onPress={confirmDeleteSchedule} color="red" />}
-            <Txt text={msgError}/>
+
         </View>
     );
 };
