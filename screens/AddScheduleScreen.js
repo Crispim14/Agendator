@@ -22,7 +22,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [msgError, setMsgError] = useState({
         nameError: '',
         phoneError: '',
-        timeError: '',
+        timeError: '', 
         dateError: '',
         serviceError: '',
         professionalError: '',

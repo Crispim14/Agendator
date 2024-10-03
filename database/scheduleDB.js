@@ -27,8 +27,30 @@ export const createTable = async () => {
                 service TEXT NOT NULL,
                 professional TEXT
             );
+
+            CREATE TABLE IF NOT EXISTS services (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                favorite BLOB NOT NULL
+            );
+
         `);
      
+    } catch (error) {
+       
+        throw error;
+    }
+};
+
+export const addService = async (service) => {
+    try {
+        const db = await openDatabase();
+        const result = await db.runAsync(
+            'INSERT INTO services (name, description) VALUES (?, ?)',
+            [service.name, service.description]
+        );
+        return result;
     } catch (error) {
        
         throw error;
@@ -64,11 +86,36 @@ export const getSchedules = async (date) => {
     }
 };
 
+export const getService = async () => {
+    try {
+        createTable();
+        const db = await openDatabase();
+        const result = await db.getAllAsync('SELECT * FROM services ORDER BY name ASC');
+      
+        return result;
+    } catch (error) {
+
+        throw error;
+    }
+};
+
 // Função para excluir um agendamento
 export const deleteSchedule = async (id) => {
     try {
         const db = await openDatabase();
         const result = await db.runAsync('DELETE FROM schedules WHERE id = ?', [id]);
+        
+        return result;
+    } catch (error) {
+       
+        throw error;
+    }
+};
+
+export const deleteService = async (id) => {
+    try {
+        const db = await openDatabase();
+        const result = await db.runAsync('DELETE FROM services WHERE id = ?', [id]);
         
         return result;
     } catch (error) {
@@ -93,15 +140,18 @@ export const updateSchedule = async (schedule) => {
     }
 };
 
-// Função para limpar todos os agendamentos
-export const clearAllSchedules = async () => {
+export const updateService = async (service) => {
     try {
         const db = await openDatabase();
-        const result = await db.execAsync('DELETE FROM schedules');
+        const result = await db.runAsync(
+            'UPDATE services SET name = ?, description = ? WHERE id = ?',
+            [service.name, service.description]
+        );
        
         return result;
     } catch (error) {
-        
+       
         throw error;
     }
 };
+

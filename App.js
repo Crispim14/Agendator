@@ -5,8 +5,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import AddScheduleScreen from './screens/AddScheduleScreen';
-import TestScreen from './screens/TestScreen';
-import { createTable } from './database/scheduleDB';
+import { addService, createTable } from './database/scheduleDB';
+import ServiceScreen from './screens/ServiceScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -43,6 +43,14 @@ export default function App() {
                         headerStyle: { backgroundColor: '#1A2833' },
                         headerTitleStyle: { color: '#E3E3E3', }
                     }} />
+                <Drawer.Screen name="ServiceScreen" component={ServiceScreen}
+                    options={{
+                        title: 'Novo Serviço',
+                        headerStyle: { backgroundColor: '#1A2833' },
+                        headerTitleStyle: { color: '#E3E3E3', }
+                    }} />
+
+                
             </Drawer.Navigator>
             {/* <Stack.Navigator>
                 <Stack.Screen name="Home" component={HomeScreen} options={{
