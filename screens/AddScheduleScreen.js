@@ -4,6 +4,8 @@ import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid } from 're
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { addSchedule, updateSchedule, deleteSchedule, getSchedules } from '../database/scheduleDB';
 import Txt from '../components/Txt';
+import BtnPadrao from '../components/BtnPadrao';
+import BtnPadraoMenor from '../components/BtnPadraoMenor';
 
 
 function showToast(text) {
@@ -212,7 +214,9 @@ const clearErrors = () =>{
 
             <Txt text={'Data:'} />
             <Text style={{ color: 'red' }}>{msgError.dateError}</Text>
-            <Button title="Selecionar Data" onPress={() => setShowDatePicker(true)} />
+
+            <BtnPadraoMenor propOnPress={() => setShowDatePicker(true)}>Selecionar Data</BtnPadraoMenor>
+
             {showDatePicker && (
                 <DateTimePicker
                     value={date}
@@ -228,7 +232,9 @@ const clearErrors = () =>{
 
             <Txt text={'Horário:'} />
             <Text style={{ color: 'red' }}>{msgError.timeError}</Text>
-            <Button title="Selecionar Horário" onPress={() => setShowTimePicker(true)} />
+
+            <BtnPadraoMenor propOnPress={() => setShowTimePicker(true)}>Selecionar Horário</BtnPadraoMenor>
+
             {showTimePicker && (
                 <DateTimePicker
                     value={time ? new Date(`1970-01-01T${time}`) : new Date()}
