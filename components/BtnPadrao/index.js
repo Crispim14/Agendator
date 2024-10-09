@@ -9,7 +9,7 @@ export default function BtnPadrao({ children,propOnPress}) {
     return (
         <Pressable style={styles.button} onPress={handleFuncion}>
 
-            <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 20 }}>{children}</Text>
+            <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 20, fontWeight: 'bold' }}>{children}</Text>
 
         </Pressable>
     );

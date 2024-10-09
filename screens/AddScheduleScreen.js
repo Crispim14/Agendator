@@ -258,7 +258,8 @@ const clearErrors = () =>{
             <Button title="Limpar Campos" onPress={clearFormData } />
 
             <Button title="Salvar" onPress={saveSchedule} />
-            {schedule.id && <Button title="Excluir" onPress={confirmDeleteSchedule} color="red" />}
+            
+            {schedule.id && <BtnPadraoMenor propOnPress={confirmDeleteSchedule} bgColor="red" >Excluir</BtnPadraoMenor>}
 
 
 
