@@ -255,9 +255,9 @@ const clearErrors = () =>{
             <TextInput value={professional} onChangeText={setProfessional} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
 
-            <Button title="Limpar Campos" onPress={clearFormData } />
+            <BtnPadraoMenor propOnPress={clearFormData } >Limpar Campos</BtnPadraoMenor>
 
-            <Button title="Salvar" onPress={saveSchedule} />
+            <BtnPadraoMenor propOnPress={saveSchedule} >Salvar</BtnPadraoMenor>
             
             {schedule.id && <BtnPadraoMenor propOnPress={confirmDeleteSchedule} bgColor="red" >Excluir</BtnPadraoMenor>}
 
