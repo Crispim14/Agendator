@@ -5,7 +5,7 @@ import { getSchedules, getService } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BtnPadrao from '../components/BtnPadrao';
-
+import SttsBar from '../components/SttsBar';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -62,6 +62,7 @@ const HomeScreen = ({ navigation }) => {
     return (
 
         <View style={{ flex: 1, backgroundColor: '#1A2833' }}>
+            <SttsBar />
 
             {showDatePicker && (
                 <DateTimePicker
@@ -72,7 +73,7 @@ const HomeScreen = ({ navigation }) => {
                 />
             )}
 
-            <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 10 }}>{`Data selecionada ${selectedDate}`}</Text>
+            <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 10, fontFamily: 'LeagueSpartan-Regular' }}>{`Data selecionada ${selectedDate}`}</Text>
 
             <BtnPadrao propOnPress={() => navigation.navigate('AddSchedule')}>
 

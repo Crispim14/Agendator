@@ -4,6 +4,7 @@ import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid } from 're
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {  deleteService, updateService, addService } from '../database/scheduleDB';
 import Txt from '../components/Txt';
+import BtnPadraoMenor from '../components/BtnPadraoMenor';
 
 
 function showToast(text) {
@@ -139,10 +140,10 @@ const clearErrors = () =>{
             <TextInput value={description} onChangeText={setDescription} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
 
-            <Button title="Limpar Campos" onPress={clearFormData } />
+            <BtnPadraoMenor propOnPress={clearFormData } >Limpar Campo</BtnPadraoMenor>
 
-            <Button title="Salvar" onPress={saveService} />
-            {service.id && <Button title="Excluir" onPress={confirmDeleteService} color="red" />}
+            <BtnPadraoMenor propOnPress={saveService} >Salvar</BtnPadraoMenor>
+            {service.id && <BtnPadraoMenor propOnPress={confirmDeleteService} bgColor="red" >Excluir</BtnPadraoMenor>}
 
 
 

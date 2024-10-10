@@ -205,15 +205,15 @@ const clearErrors = () =>{
     return (
         <View style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
             <Txt text={'Nome:'} />
-            <Text style={{ color: 'red' }}>{msgError.nameError}</Text>
+            <Text style={{ color: 'red', fontFamily: 'LeagueSpartan-Regular' }}>{msgError.nameError}</Text>
             <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
             <Txt text={'Telefone:'} />
-            <Text style={{ color: 'red' }}>{msgError.phoneError}</Text>
+            <Text style={{ color: 'red', fontFamily: 'LeagueSpartan-Regular' }}>{msgError.phoneError}</Text>
             <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
             <Txt text={'Data:'} />
-            <Text style={{ color: 'red' }}>{msgError.dateError}</Text>
+            <Text style={{ color: 'red', fontFamily: 'LeagueSpartan-Regular' }}>{msgError.dateError}</Text>
 
             <BtnPadraoMenor propOnPress={() => setShowDatePicker(true)}>Selecionar Data</BtnPadraoMenor>
 
@@ -231,7 +231,7 @@ const clearErrors = () =>{
 
 
             <Txt text={'Horário:'} />
-            <Text style={{ color: 'red' }}>{msgError.timeError}</Text>
+            <Text style={{ color: 'red', fontFamily: 'LeagueSpartan-Regular' }}>{msgError.timeError}</Text>
 
             <BtnPadraoMenor propOnPress={() => setShowTimePicker(true)}>Selecionar Horário</BtnPadraoMenor>
 
@@ -247,11 +247,11 @@ const clearErrors = () =>{
 
 
             <Txt text={'Serviço:'} />
-            <Text style={{ color: 'red' }}>{msgError.serviceError}</Text>
+            <Text style={{ color: 'red', fontFamily: 'LeagueSpartan-Regular' }}>{msgError.serviceError}</Text>
             <TextInput value={service} onChangeText={setService} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
             <Txt text={'Profissional:'} />
-            <Text style={{ color: 'red' }}>{msgError.professionalError}</Text>
+            <Text style={{ color: 'red', fontFamily: 'LeagueSpartan-Regular' }}>{msgError.professionalError}</Text>
             <TextInput value={professional} onChangeText={setProfessional} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
 
 
