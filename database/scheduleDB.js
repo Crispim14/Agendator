@@ -47,8 +47,8 @@ export const addService = async (service) => {
     try {
         const db = await openDatabase();
         const result = await db.runAsync(
-            'INSERT INTO services (name, description) VALUES (?, ?)',
-            [service.name, service.description]
+            'INSERT INTO services (name, description, favorite) VALUES (?, ?, ?)',
+            [service.name, service.description, service.favorite]
         );
         return result;
     } catch (error) {
@@ -90,11 +90,10 @@ export const getService = async () => {
     try {
         createTable();
         const db = await openDatabase();
-        const result = await db.getAllAsync('SELECT * FROM services ORDER BY name ASC');
-      
+        // Alterar a consulta para trazer os favoritos primeiro
+        const result = await db.getAllAsync('SELECT * FROM services ORDER BY favorite DESC, name ASC');
         return result;
     } catch (error) {
-
         throw error;
     }
 };
@@ -145,7 +144,7 @@ export const updateService = async (service) => {
         const db = await openDatabase();
         const result = await db.runAsync(
             'UPDATE services SET name = ?, description = ? WHERE id = ?',
-            [service.name, service.description]
+            [service.name, service.description, service.favorite]
         );
        
         return result;
@@ -154,4 +153,15 @@ export const updateService = async (service) => {
         throw error;
     }
 };
-
+export const toggleFavoriteService = async (serviceId, currentFavorite) => {
+    try {
+        const db = await openDatabase();
+        const newFavorite = currentFavorite === 0 ? 1 : 0;  // Alternar entre 0 e 1
+        await db.runAsync(
+            'UPDATE services SET favorite = ? WHERE id = ?',
+            [newFavorite, serviceId]
+        );
+    } catch (error) {
+        throw error;
+    }
+};
