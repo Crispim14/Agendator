@@ -9,5 +9,6 @@ export default function Txt({text}) {
 const styles = StyleSheet.create({
     text: {
       color: '#E3E3E3',
+      fontFamily: 'LeagueSpartan-Regular'
     },
   })
