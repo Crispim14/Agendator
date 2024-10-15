@@ -1,7 +1,7 @@
 // screens/HomeScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Pressable, Button, Platform } from 'react-native';
-import { getSchedules, getService } from '../database/scheduleDB';
+import { getSchedules, getServices } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BtnPadrao from '../components/BtnPadrao';
@@ -28,8 +28,8 @@ const HomeScreen = ({ navigation }) => {
         const fetchSchedules = async () => {
             try {
                 const schedulesData = await getSchedules(selectedDate);
-                const x = await getService(selectedDate);
-                console.log(x)
+                const x = await getServices(selectedDate);
+                //console.log(x)
                 setSchedules(schedulesData);
             } catch (error) {
                 console.error('Erro ao buscar agendamentos:', error);

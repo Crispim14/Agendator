@@ -12,36 +12,37 @@ function showToast(text) {
 const ServiceScreen = ({ route, navigation }) => {
     const service = route.params?.service || {};
     const [name, setName] = useState(service.name || '');
-    const [description, setDescription] = useState(service.phone || '');
- 
+    const [description, setDescription] = useState(service.description || '');
+
     const [msgError, setMsgError] = useState({
         nameError: '',
         descriptionError: '',
-        
-
-
     });
 
+
+    useEffect(() => {
+        if (!service.id) {
+
+        } else {
+            setName(service.name);
+            setDescription(service.description);
+        }
+    }, [service]);
 
     const clearFormData = () => {
         setName('');
         setDescription('');
-   
     };
 
+    const clearErrors = () => {
+        setMsgError({
+            nameError: '',
+            descriptionError: '',
+        });
+    };
 
-const clearErrors = () =>{
-    setMsgError({
-        nameError: '',
-        descriptionError: '',
-      });
-      
-}
-
-    const checkErros = () => {
-
+    const checkErrors = () => {
         clearErrors();
-
         let error = false;
         if (!name.trim()) {
             setMsgError(prevState => ({
@@ -49,33 +50,25 @@ const clearErrors = () =>{
                 nameError: 'Digite um nome para o serviço'
             }));
             error = true;
-        } 
-         if (!description.trim()) {
+        }
+        if (!description.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
-                descriptionError: 'Digite uma descrição para o servio'
+                descriptionError: 'Digite uma descrição para o serviço'
             }));
             error = true;
-        } 
-        
-
-        return error
-    }
+        }
+        return error;
+    };
 
     const saveService = async () => {
         try {
-
-            if (checkErros() == true) {
+            if (checkErrors()) {
                 return;
             }
-    
-         
             const newService = { name, description };
-
-
             proceedSave(newService);
         } catch (error) {
-           
             showToast('Ocorreu um erro ao salvar o serviço.');
         }
     };
@@ -91,16 +84,16 @@ const clearErrors = () =>{
                 await addService(newService);
                 showToast('Serviço inserido com sucesso');
             }
+            clearFormData();
             navigation.navigate('Home', { refresh: true });
         } catch (error) {
-            showToast('Ocorreu um erro ao salvar o servico.');
+            showToast('Ocorreu um erro ao salvar o serviço.');
         }
     };
-
     const confirmDeleteService = () => {
         Alert.alert(
-            "Excluir Agendamento",
-            "Tem certeza de que deseja excluir este agendamento?",
+            "Excluir Serviço",
+            "Tem certeza de que deseja excluir este serviço?",
             [
                 { text: "Cancelar", style: "cancel" },
                 { text: "Excluir", style: "destructive", onPress: removeService }
@@ -113,44 +106,39 @@ const clearErrors = () =>{
         try {
             if (service.id) {
                 await deleteService(service.id);
+                console.log(service.id)
                 showToast('Serviço deletado com sucesso');
                 navigation.navigate('Home', { refresh: true });
             }
         } catch (error) {
-         
+            console.log(error)
             showToast('Ocorreu um erro ao excluir o serviço.');
-           
         }
     };
 
-    
-
     return (
         <View style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
-                <Txt text={'Nome do serviço:'} />
+            <Txt text={'Nome do serviço:'} />
             <Text style={{ color: 'red' }}>{msgError.nameError}</Text>
-            <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
+            <TextInput
+                value={name}
+                onChangeText={setName}
+                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }}
+            />
 
- 
-
-            <Txt text={'Descrção do serviço:'} />
+            <Txt text={'Descrição do serviço:'} />
             <Text style={{ color: 'red' }}>{msgError.descriptionError}</Text>
-            <TextInput value={description} onChangeText={setDescription} style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} />
+            <TextInput
+                value={description}
+                onChangeText={setDescription}
+                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }}
+            />
 
-
-            <BtnPadraoMenor propOnPress={clearFormData } >Limpar Campo</BtnPadraoMenor>
-
-            <BtnPadraoMenor propOnPress={saveService} >Salvar</BtnPadraoMenor>
-            {service.id && <BtnPadraoMenor propOnPress={confirmDeleteService} bgColor="red" >Excluir</BtnPadraoMenor>}
-
-
-
-
+            <BtnPadraoMenor propOnPress={clearFormData}>Limpar Campos</BtnPadraoMenor>
+            <BtnPadraoMenor propOnPress={saveService}>Salvar</BtnPadraoMenor>
+            {service.id && <BtnPadraoMenor propOnPress={confirmDeleteService} bgColor="red">Excluir</BtnPadraoMenor>}
         </View>
-        
     );
-
-    
 };
 
 export default ServiceScreen;
