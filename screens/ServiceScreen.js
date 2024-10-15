@@ -22,7 +22,7 @@ const ServiceScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (!service.id) {
-           
+
         } else {
             setName(service.name);
             setDescription(service.description);
@@ -84,7 +84,7 @@ const ServiceScreen = ({ route, navigation }) => {
                 await addService(newService);
                 showToast('Serviço inserido com sucesso');
             }
-      clearFormData();
+            clearFormData();
             navigation.navigate('Home', { refresh: true });
         } catch (error) {
             showToast('Ocorreu um erro ao salvar o serviço.');
@@ -120,18 +120,18 @@ const ServiceScreen = ({ route, navigation }) => {
         <View style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
             <Txt text={'Nome do serviço:'} />
             <Text style={{ color: 'red' }}>{msgError.nameError}</Text>
-            <TextInput 
-                value={name} 
-                onChangeText={setName} 
-                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} 
+            <TextInput
+                value={name}
+                onChangeText={setName}
+                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }}
             />
 
             <Txt text={'Descrição do serviço:'} />
             <Text style={{ color: 'red' }}>{msgError.descriptionError}</Text>
-            <TextInput 
-                value={description} 
-                onChangeText={setDescription} 
-                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }} 
+            <TextInput
+                value={description}
+                onChangeText={setDescription}
+                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }}
             />
 
             <BtnPadraoMenor propOnPress={clearFormData}>Limpar Campos</BtnPadraoMenor>

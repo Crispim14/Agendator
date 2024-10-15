@@ -56,14 +56,14 @@ const AddScheduleScreen = ({ route, navigation }) => {
     };
 
     const saveSchedule = async () => {
-      
+
 
         const newSchedule = { name, phone, date: date.toISOString().split('T')[0], time, service: pickers, professional };
 
-       
+
     };
 
-  
+
 
     return (
         <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
@@ -72,7 +72,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
             <Txt text={'Telefone:'} />
             <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16 }} />
 
-         
+
             {pickers.map((picker, index) => (
                 <ServicePicker
                     key={index}
