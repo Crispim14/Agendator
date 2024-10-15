@@ -29,12 +29,16 @@ const openDatabase = async () => {
 //     throw error;
 //   }
 // };
+
 // Função para criar a tabela se não existir
 export const createTable = async () => {
   try {
     const db = await openDatabase();
     await db.execAsync(`
             PRAGMA journal_mode = WAL;
+
+
+
             CREATE TABLE IF NOT EXISTS schedules (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -44,7 +48,7 @@ export const createTable = async () => {
                 service TEXT NOT NULL,
                 professional TEXT
             );
-
+              
             CREATE TABLE IF NOT EXISTS services (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -67,12 +71,11 @@ export const createTable = async () => {
            
             );
 
+
         `);
-     
-    } catch (error) {
-       
-        throw error;
-    }
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const addService = async (service) => {
@@ -165,9 +168,9 @@ export const getLastServicesProvider = async () => {
     return result;
   } catch (error) {
     throw error;
-  }};
+  }
+};
 
-// Função para buscar os agendamentos para uma data específica
 export const getSchedules = async (date) => {
   try {
     createTable();
@@ -184,19 +187,19 @@ export const getSchedules = async (date) => {
 };
 
 export const getServices = async () => {
-    try {
-      createTable(); // Cria a tabela se não existir
-      const db = await openDatabase();
-      const result = await db.getAllAsync(
-        "SELECT * FROM services ORDER BY name ASC"
-      );
-  
-      return result;    } catch (error) {
+  try {
+    createTable(); // Cria a tabela se não existir
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      "SELECT * FROM services ORDER BY name ASC"
+    );
 
-        throw error;
-    }
-  };
-  
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getServicesProvider = async () => {
   try {
     createTable();
@@ -217,8 +220,8 @@ export const getListServicesProvider = async (data) => {
     const db = await openDatabase();
     const result = await db.getAllAsync(
       "SELECT * FROM servicesProvider INNER JOIN " +
-        "relatesServicesProvider ON servicesProvider.id = relatesServicesProvider.idProvider " +
-        "WHERE relatesServicesProvider.idService = ? ",
+      "relatesServicesProvider ON servicesProvider.id = relatesServicesProvider.idProvider " +
+      "WHERE relatesServicesProvider.idService = ? ",
       [data]
     );
 
@@ -239,9 +242,9 @@ export const getTeste = async () => {
     return result;
   } catch (error) {
     throw error;
-  }};
+  }
+};
 
-// Função para excluir um agendamento
 export const deleteSchedule = async (id) => {
   try {
     const db = await openDatabase();
@@ -252,7 +255,8 @@ export const deleteSchedule = async (id) => {
     return result;
   } catch (error) {
     throw error;
-  }};
+  }
+};
 
 export const deleteService = async (id) => {
   try {
@@ -263,7 +267,6 @@ export const deleteService = async (id) => {
   } catch (error) {
     throw error;
   }
-
 };
 
 // Função para atualizar um agendamento existente
@@ -286,14 +289,15 @@ export const updateSchedule = async (schedule) => {
     return result;
   } catch (error) {
     throw error;
-  }};
+  }
+};
 
 export const updateService = async (service) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
       "UPDATE services SET name = ?, description = ? WHERE id = ?",
-      [service.name, service.description,service.id]
+      [service.name, service.description, service.id]
     );
 
     return result;
@@ -307,9 +311,9 @@ export const updateServiceProvider = async (serviceProvider) => {
     const db = await openDatabase();
     const result = await db.runAsync(
       "UPDATE servicesProvider SET name = ? WHERE id = ?"
-      [serviceProvider.name, service.id,service.id]
+      [serviceProvider.name, service.id, service.id]
     );
-    await deleteServiceProvider(serviceProvider); 
+    await deleteServiceProvider(serviceProvider);
     return result;
   } catch (error) {
     throw error;
@@ -321,11 +325,13 @@ export const deleteServiceProvider = async (serviceProvider) => {
     const db = await openDatabase();
     const result = await db.runAsync(
       "DELETE FROM relatesServicesProvider WHERE idProvider = ?",
-      [serviceProvider.id] 
+      [serviceProvider.id]
     );
 
     return result;
   } catch (error) {
     throw error;
-  }};
+  }
+};
+
 
