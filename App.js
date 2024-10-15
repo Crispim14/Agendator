@@ -105,22 +105,22 @@ export default function App() {
                         }
                     }} />
 
-<Drawer.Screen name="ServiceList" component={ServiceListScreen}
-    options={{
-        title: 'Lista de Serviços',
-        headerStyle: {
-            backgroundColor: '#1A2833'
-        },
-        headerTitleStyle: {
-            color: '#E3E3E3',
-            fontFamily: 'LeagueSpartan-Bold'
-        },
-        drawerLabelStyle: {
-            color: '#E3E3E3',
-            fontFamily: 'LeagueSpartan-SemiBold'
-        }
-    }} />
- <Drawer.Screen name="ServiceProviderListScreen" component={ServiceProviderListScreen} options={{
+                <Drawer.Screen name="ServiceList" component={ServiceListScreen}
+                    options={{
+                        title: 'Lista de Serviços',
+                        headerStyle: {
+                            backgroundColor: '#1A2833'
+                        },
+                        headerTitleStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-Bold'
+                        },
+                        drawerLabelStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-SemiBold'
+                        }
+                    }} />
+                <Drawer.Screen name="ServiceProviderListScreen" component={ServiceProviderListScreen} options={{
                     title: 'Lista prestadores de  Serviços',
                     headerStyle: {
                         backgroundColor: '#1A2833'
@@ -135,8 +135,6 @@ export default function App() {
                     }
                 }} />
             </Drawer.Navigator>
-
-            
         </NavigationContainer>
 
     );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ToastAndroid } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { deleteService, updateService, addService } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
