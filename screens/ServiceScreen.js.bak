@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ToastAndroid } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { deleteService, updateService, addService } from '../database/scheduleDB';
+import {  deleteService, updateService, addService } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
 
 function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
-}
+  }
 
 const ServiceScreen = ({ route, navigation }) => {
     const service = route.params?.service || {};

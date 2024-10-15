@@ -8,6 +8,9 @@ import AddScheduleScreen from './screens/AddScheduleScreen';
 import { addService, createTable } from './database/scheduleDB';
 import ServiceScreen from './screens/ServiceScreen';
 import { useFonts } from 'expo-font';
+import ServiceProviderScreen from './screens/ServiceProviderScreen';
+import ServiceListScreen from './screens/ServiceListScreen'; // Importando a nova tela
+import ServiceProviderListScreen from './screens/ServiceProviderListScreen ';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -86,7 +89,51 @@ export default function App() {
                         }
                     }} />
 
+                <Drawer.Screen name="ServiceProviderScreen" component={ServiceProviderScreen}
+                    options={{
+                        title: 'Novo prestador de serviço',
+                        headerStyle: {
+                            backgroundColor: '#1A2833'
+                        },
+                        headerTitleStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-Bold'
+                        },
+                        drawerLabelStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-SemiBold'
+                        }
+                    }} />
 
+                <Drawer.Screen name="ServiceList" component={ServiceListScreen}
+                    options={{
+                        title: 'Lista de Serviços',
+                        headerStyle: {
+                            backgroundColor: '#1A2833'
+                        },
+                        headerTitleStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-Bold'
+                        },
+                        drawerLabelStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-SemiBold'
+                        }
+                    }} />
+                <Drawer.Screen name="ServiceProviderListScreen" component={ServiceProviderListScreen} options={{
+                    title: 'Lista prestadores de  Serviços',
+                    headerStyle: {
+                        backgroundColor: '#1A2833'
+                    },
+                    headerTitleStyle: {
+                        color: '#E3E3E3',
+                        fontFamily: 'LeagueSpartan-Bold'
+                    },
+                    drawerLabelStyle: {
+                        color: '#E3E3E3',
+                        fontFamily: 'LeagueSpartan-SemiBold'
+                    }
+                }} />
             </Drawer.Navigator>
         </NavigationContainer>
 
