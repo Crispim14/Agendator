@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Text, TextInput, Alert, ToastAndroid, ScrollView } from "react-native";
 import {
-  deleteService,
+
   updateService,
   addServicesProvider,
   getServices,
   getLastServicesProvider,
   addRelatesServicesProvider,
+  deleteServiceProvider, 
 } from "../database/scheduleDB";
 import Txt from "../components/Txt";
 import BtnPadraoMenor from "../components/BtnPadraoMenor";
@@ -28,11 +29,18 @@ const ServiceProviderScreen = ({ route, navigation }) => {
   });
 
   useEffect(() => {
+    console.log('macaco pelado')
+    console.log(service)
+
     const fetchServices = async () => {
       try {
+      
         const result = await getServices();
         setServices(result);
       } catch (error) {
+        console.log('deu erro')
+        console.log(error)
+
         console.error("Erro ao buscar serviços:", error);
       }
     };
@@ -123,12 +131,14 @@ const ServiceProviderScreen = ({ route, navigation }) => {
       ],
       { cancelable: true }
     );
+    clearFormData();
   };
 
   const removeService = async () => {
     try {
       if (service.id) {
-        await deleteService(service.id);
+        console.log(service.id)
+        await deleteServiceProvider(service);
         showToast("Serviço deletado com sucesso");
         navigation.navigate("Home", { refresh: true });
       }
@@ -145,7 +155,7 @@ const ServiceProviderScreen = ({ route, navigation }) => {
 
   const addPicker = () => {
     setPickers([...pickers, { serviceId: '', affinity: 1 }]);
-  };
+  }; 
 
   const removePicker = (index) => {
     setPickers(pickers.filter((_, i) => i !== index));

@@ -9,7 +9,7 @@ const openDatabase = async () => {
   } catch (error) {
     throw error;
   }
-};
+}; 
 
 // // Função para criar a tabela se não existir
 // export const dropTable = async () => {
@@ -70,6 +70,14 @@ export const createTable = async () => {
                 affinity INTEGER NOT NULL
            
             );
+            
+             CREATE TABLE IF NOT EXISTS relatesServiceSchedule(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                idService INTEGER NOT NULL,
+                idSchedules INTEGER NOT NULL,
+                idProvider INTEGER NOT NULL
+           
+            );
 
 
         `);
@@ -82,9 +90,10 @@ export const addService = async (service) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      "INSERT INTO services (name, description,favorite) VALUES (?, ?, 1)",
-      [service.name, service.description]
+      "INSERT INTO services (name, description,favorite) VALUES (?, ?, ?)",
+      [service.name, service.description,service.favorite]
     );
+   
     return result;
   } catch (error) {
     throw error;
@@ -294,10 +303,11 @@ export const updateSchedule = async (schedule) => {
 
 export const updateService = async (service) => {
   try {
+    console.log(service)
     const db = await openDatabase();
     const result = await db.runAsync(
-      "UPDATE services SET name = ?, description = ? WHERE id = ?",
-      [service.name, service.description, service.id]
+      "UPDATE services SET name = ?, description = ?, favorite = ? WHERE id = ?",
+      [service.name, service.description, service.favorite, service.id]
     );
 
     return result;
@@ -320,18 +330,40 @@ export const updateServiceProvider = async (serviceProvider) => {
   }
 };
 
-export const deleteServiceProvider = async (serviceProvider) => {
+export const deleteRelatesServiceProvider = async (serviceProvider) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
       "DELETE FROM relatesServicesProvider WHERE idProvider = ?",
-      [serviceProvider.id]
+      [serviceProvider.idProvider]
     );
 
     return result;
   } catch (error) {
+
+    
     throw error;
   }
 };
+
+
+export const deleteServiceProvider = async (serviceProvider) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      "DELETE FROM servicesProvider WHERE id = ?",
+      [serviceProvider.id]
+    );
+    console.log(serviceProvider.id)
+console.log('deu bom')
+    return result;
+  } catch (error) {
+
+    console.log('deu ruim')
+    console.log(error)
+    throw error;
+  }
+};
+
 
 

@@ -10,7 +10,7 @@ const ServiceListScreen = ({ navigation }) => {
         const fetchServices = async () => {
             try {
                 const servicesData = await getServices();
-                console.log('Serviços carregados:', servicesData);
+                //console.log('Serviços carregados:', servicesData);
                 setServices(servicesData);
             } catch (error) {
                 console.error('Erro ao buscar serviços:', error);

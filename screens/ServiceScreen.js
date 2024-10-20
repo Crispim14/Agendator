@@ -4,6 +4,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { deleteService, updateService, addService } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
+import Checkbox from 'expo-checkbox'; // Importando o Checkbox do expo-checkbox
+
 
 function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
@@ -11,8 +13,12 @@ function showToast(text) {
 
 const ServiceScreen = ({ route, navigation }) => {
     const service = route.params?.service || {};
+    console.log(service)
     const [name, setName] = useState(service.name || '');
     const [description, setDescription] = useState(service.description || '');
+    const [isFavorite, setIsFavorite] = useState(service.favorite === 1);
+
+    console.log(isFavorite)
 
     const [msgError, setMsgError] = useState({
         nameError: '',
@@ -26,13 +32,28 @@ const ServiceScreen = ({ route, navigation }) => {
         } else {
             setName(service.name);
             setDescription(service.description);
+            setIsFavorite(service.favorite === 1);
         }
     }, [service]);
 
     const clearFormData = () => {
         setName('');
         setDescription('');
+        setIsFavorite(false); 
     };
+
+
+        
+    const handleFavorite = () => {
+        setIsFavorite(prev => {
+            console.log("isFavorite antes: ", prev);
+            const newValue = !prev;
+            console.log("isFavorite depois: ", newValue);
+            return newValue;
+        });
+    };
+          
+      
 
     const clearErrors = () => {
         setMsgError({
@@ -66,7 +87,8 @@ const ServiceScreen = ({ route, navigation }) => {
             if (checkErrors()) {
                 return;
             }
-            const newService = { name, description };
+            const newService = { name, description, favorite: isFavorite ? 1 : 0 }; 
+         
             proceedSave(newService);
         } catch (error) {
             showToast('Ocorreu um erro ao salvar o serviço.');
@@ -80,7 +102,7 @@ const ServiceScreen = ({ route, navigation }) => {
                 await updateService({ ...newService, id: service.id });
                 showToast('Serviço atualizado com sucesso');
             } else {
-                // Novo
+               
                 await addService(newService);
                 showToast('Serviço inserido com sucesso');
             }
@@ -100,18 +122,19 @@ const ServiceScreen = ({ route, navigation }) => {
             ],
             { cancelable: true }
         );
+        clearFormData();
     };
 
     const removeService = async () => {
         try {
             if (service.id) {
                 await deleteService(service.id);
-                console.log(service.id)
+              
                 showToast('Serviço deletado com sucesso');
                 navigation.navigate('Home', { refresh: true });
             }
         } catch (error) {
-            console.log(error)
+          
             showToast('Ocorreu um erro ao excluir o serviço.');
         }
     };
@@ -133,6 +156,15 @@ const ServiceScreen = ({ route, navigation }) => {
                 onChangeText={setDescription}
                 style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }}
             />
+ 
+ <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+    <Checkbox
+        value={isFavorite}
+        onValueChange={handleFavorite}
+        color={isFavorite ? '#FFD700' : '#E3E3E3'}
+    />
+    <Txt text="Favorito" />
+</View>
 
             <BtnPadraoMenor propOnPress={clearFormData}>Limpar Campos</BtnPadraoMenor>
             <BtnPadraoMenor propOnPress={saveService}>Salvar</BtnPadraoMenor>
