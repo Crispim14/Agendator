@@ -200,7 +200,7 @@ export const getServices = async () => {
     createTable(); // Cria a tabela se não existir
     const db = await openDatabase();
     const result = await db.getAllAsync(
-      "SELECT * FROM services ORDER BY name ASC"
+      "SELECT * FROM services ORDER BY favorite DESC, name ASC"
     );
 
     return result;

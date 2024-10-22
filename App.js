@@ -7,10 +7,12 @@ import HomeScreen from './screens/HomeScreen';
 import AddScheduleScreen from './screens/AddScheduleScreen';
 import { addService, createTable } from './database/scheduleDB';
 import ServiceScreen from './screens/ServiceScreen';
+import ServiceEditScreen from './screens/ServiceEditScreen';
 import { useFonts } from 'expo-font';
 import ServiceProviderScreen from './screens/ServiceProviderScreen';
 import ServiceListScreen from './screens/ServiceListScreen'; // Importando a nova tela
 import ServiceProviderListScreen from './screens/ServiceProviderListScreen ';
+import ServiceProviderEditScreen from './screens/ServiceProviderEditScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -88,10 +90,27 @@ export default function App() {
                             fontFamily: 'LeagueSpartan-SemiBold'
                         }
                     }} />
-
-                <Drawer.Screen name="ServiceProviderScreen" component={ServiceProviderScreen}
+                <Drawer.Screen name="ServiceEditScreen" component={ServiceEditScreen}
                     options={{
-                        title: 'Novo prestador de serviço',
+                        title: 'Editar Serviço',
+                        headerStyle: {
+                            backgroundColor: '#1A2833'
+                        },
+                        headerTitleStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-Bold'
+                        },
+                        drawerLabelStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-SemiBold'
+                        },
+                        drawerItemStyle: {
+                            display: 'none' // Isso remove o botão do Drawer
+                        }
+                    }} />
+                <Drawer.Screen name="ServiceProviderScreen" component={ServiceProviderEditScreen}
+                    options={{
+                        title: 'Novo Colaborador',
                         headerStyle: {
                             backgroundColor: '#1A2833'
                         },
@@ -104,7 +123,24 @@ export default function App() {
                             fontFamily: 'LeagueSpartan-SemiBold'
                         }
                     }} />
-
+                <Drawer.Screen name="ServiceProviderEditScreen" component={ServiceProviderScreen}
+                    options={{
+                        title: 'Editar Colaborador',
+                        headerStyle: {
+                            backgroundColor: '#1A2833'
+                        },
+                        headerTitleStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-Bold'
+                        },
+                        drawerLabelStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-SemiBold'
+                        },
+                        drawerItemStyle: {
+                            display: 'none' // Isso remove o botão do Drawer
+                        }
+                    }} />
                 <Drawer.Screen name="ServiceList" component={ServiceListScreen}
                     options={{
                         title: 'Lista de Serviços',
@@ -121,7 +157,7 @@ export default function App() {
                         }
                     }} />
                 <Drawer.Screen name="ServiceProviderListScreen" component={ServiceProviderListScreen} options={{
-                    title: 'Lista prestadores de  Serviços',
+                    title: 'Lista prestadores de Serviços',
                     headerStyle: {
                         backgroundColor: '#1A2833'
                     },

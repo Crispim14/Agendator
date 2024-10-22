@@ -17,9 +17,8 @@ function showToast(text) {
   ToastAndroid.show(text, ToastAndroid.SHORT);
 }
 
-const ServiceProviderScreen = ({ route, navigation }) => {
-  const serviceProvider = route.params?.serviceProvider || {};
-  console.log('Serviço recebido:', serviceProvider); // Log do serviço recebido
+const ServiceProviderEditScreen = ({ route, navigation }) => {
+  const serviceProvider = route.params?.service || {};
   const [name, setName] = useState(serviceProvider.name || "");
   const [pickers, setPickers] = useState([{ serviceId: '', affinity: 1 }]);
   const [services, setServices] = useState([]);
@@ -32,16 +31,14 @@ const ServiceProviderScreen = ({ route, navigation }) => {
 
 
   useEffect(() => {
-console.log("testeM")
-console.log(serviceProvider)
-
     if (!serviceProvider.id) {
 
     } else {
         setName(serviceProvider.name);
-      
+
     }
 }, [serviceProvider]);
+
 
   useEffect(() => {
 
@@ -51,7 +48,6 @@ console.log(serviceProvider)
         const result = await getServices();
         setServices(result);
       } catch (error) {
-
         console.error("Erro ao buscar serviços:", error);
       }
     };
@@ -183,6 +179,7 @@ console.log(serviceProvider)
   };
 
   return (
+
     <ScrollView style={{ flex: 1, padding: 16, backgroundColor: "#1A2833" }}>
       <Txt text={"Nome para o prestador do serviço:"} />
       <Text style={{ color: "red" }}>{msgError.nameError}</Text>
@@ -191,6 +188,7 @@ console.log(serviceProvider)
         onChangeText={setName}
         style={{ borderBottomWidth: 1, marginBottom: 16, color: "#E3E3E3" }}
       />
+      
       {pickers.map((picker, index) => (
         <ServiceProviderPicker
           key={index}
@@ -214,4 +212,4 @@ console.log(serviceProvider)
   );
 };
 
-export default ServiceProviderScreen;
+export default ServiceProviderEditScreen;

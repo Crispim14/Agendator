@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, FlatList, Pressable, StyleSheet } from 'react-native';
 import { getServices } from '../database/scheduleDB';
 import Txt from '../components/Txt';
+import BtnItemList from '../components/BtnItemList';
+import BtnPadraoMenor from '../components/BtnPadraoMenor';
+import BtnPadrao from '../components/BtnPadrao';
 
 const ServiceListScreen = ({ navigation }) => {
     const [services, setServices] = useState([]);
@@ -10,6 +13,8 @@ const ServiceListScreen = ({ navigation }) => {
         const fetchServices = async () => {
             try {
                 const servicesData = await getServices();
+
+
                 //console.log('Serviços carregados:', servicesData);
                 setServices(servicesData);
             } catch (error) {
@@ -25,36 +30,30 @@ const ServiceListScreen = ({ navigation }) => {
     }, [navigation]);
 
     const renderServiceItem = ({ item }) => (
-        <TouchableOpacity 
-            style={styles.serviceItem} 
-            onPress={() => navigation.navigate('ServiceScreen', { service: item })}
+        <BtnItemList
+            propOnPress={() => navigation.navigate('ServiceEditScreen', { service: item })}
         >
             <Txt text={item.name} />
-        </TouchableOpacity>
+        </BtnItemList>
     );
 
-    return (
+    return ( 
 
 
-        
+
         <View style={styles.container}>
 
-<TouchableOpacity 
-            style={styles.serviceItem} 
-            onPress={() => navigation.navigate('ServiceScreen')}
-        >
-            <Txt text={"Adicionar um serviço"} />
-        </TouchableOpacity>
+            <BtnPadraoMenor propOnPress={() => navigation.navigate('ServiceScreen')}>Adicionar Serviço</BtnPadraoMenor>
 
             <Txt text="Serviços" />
-            <FlatList 
+            <FlatList
                 data={services}
                 renderItem={renderServiceItem}
                 keyExtractor={item => item.id.toString()}
             />
         </View>
     );
-}; 
+};
 
 const styles = StyleSheet.create({
     container: {

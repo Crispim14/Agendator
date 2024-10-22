@@ -11,7 +11,7 @@ function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
 }
 
-const ServiceScreen = ({ route, navigation }) => {
+const ServiceEditScreen = ({ route, navigation }) => {
     const service = route.params?.service || {};
     console.log(service)
     const [name, setName] = useState(service.name || '');
@@ -173,4 +173,4 @@ const ServiceScreen = ({ route, navigation }) => {
     );
 };
 
-export default ServiceScreen;
+export default ServiceEditScreen;

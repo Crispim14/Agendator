@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, FlatList, Pressable, StyleSheet } from 'react-native';
 import { getServicesProvider } from '../database/scheduleDB';
 import Txt from '../components/Txt';
+import BtnItemList from '../components/BtnItemList';
+import BtnPadraoMenor from '../components/BtnPadraoMenor';
 
 const ServiceProviderListScreen = ({ navigation }) => {
   const [serviceProviders, setServiceProviders] = useState([]);
@@ -25,25 +27,18 @@ const ServiceProviderListScreen = ({ navigation }) => {
   }, [navigation]);
 
   const renderServiceProviderItem = ({ item }) => {
-    console.log('Item a ser renderizado:', item); // Log do item
     return (
-      <TouchableOpacity 
-        style={styles.serviceItem} 
-        onPress={() => navigation.navigate('ServiceProviderScreen', { service: item })} // Verifique se 'item' contém um 'id'
+      <BtnItemList 
+        propOnPress={() => navigation.navigate('ServiceProviderEditScreen', { serviceProvider: item })} // Corrigido para passar 'service'
       >
         <Txt text={item.name} />
-      </TouchableOpacity>
+      </BtnItemList>
     );
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.serviceItem} 
-        onPress={() => navigation.navigate('ServiceProviderScreen')}
-      >
-        <Txt text={"Adicionar um prestador de serviço"} />
-      </TouchableOpacity>
+      <BtnPadraoMenor propOnPress={() => navigation.navigate('ServiceProviderScreen')}>Adicionar um prestador de serviço</BtnPadraoMenor>
 
       <Txt text="Prestadores de Serviço" />
       <FlatList 
