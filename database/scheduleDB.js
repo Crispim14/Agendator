@@ -223,22 +223,40 @@ export const getServicesProvider = async () => {
   }
 };
 
-export const getListServicesProvider = async (data) => {
+export const getListServicesProvider = async (providerId) => {
   try {
     createTable();
     const db = await openDatabase();
     const result = await db.getAllAsync(
-      "SELECT * FROM servicesProvider INNER JOIN " +
-      "relatesServicesProvider ON servicesProvider.id = relatesServicesProvider.idProvider " +
-      "WHERE relatesServicesProvider.idService = ? ",
-      [data]
+      "SELECT services.id, services.name, relatesServicesProvider.affinity " +
+      "FROM services INNER JOIN relatesServicesProvider " +
+      "ON services.id = relatesServicesProvider.idService " +
+      "WHERE relatesServicesProvider.idProvider = ? ",
+      [providerId]  // Buscando serviços relacionados ao idProvider
     );
-
     return result;
   } catch (error) {
     throw error;
   }
 };
+
+export const getListProvider = async (providerId) => {
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      "SELECT servicesProvider.id, servicesProvider.name, relatesServicesProvider.affinity " +
+      "FROM servicesProvider INNER JOIN relatesServicesProvider " +
+      "ON servicesProvider.id = relatesServicesProvider.idProvider " +
+      "WHERE relatesServicesProvider.idService = ? ",
+      [providerId]  // Buscando serviços relacionados ao idProvider
+    );
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export const getTeste = async () => {
   try {
@@ -320,24 +338,24 @@ export const updateServiceProvider = async (serviceProvider) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      "UPDATE servicesProvider SET name = ? WHERE id = ?"
-      [serviceProvider.name, service.id, service.id]
+      "UPDATE servicesProvider SET name = ? WHERE id = ?",  // Corrigido: vírgula adicionada corretamente
+      [serviceProvider.name, serviceProvider.id]  // Removido parâmetro duplicado
     );
-    await deleteServiceProvider(serviceProvider);
+    await deleteRelatesServiceProvider(serviceProvider);  // Deleta os serviços relacionados antigos
     return result;
   } catch (error) {
     throw error;
   }
 };
 
+
 export const deleteRelatesServiceProvider = async (serviceProvider) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
       "DELETE FROM relatesServicesProvider WHERE idProvider = ?",
-      [serviceProvider.idProvider]
+      [serviceProvider.id]
     );
-
     return result;
   } catch (error) {
 

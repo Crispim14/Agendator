@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { Picker } from "@react-native-picker/picker";
 import Txt from '../components/Txt';
-import { getListServicesProvider } from '../database/scheduleDB';
+import { getListProvider } from '../database/scheduleDB';
 
 const ServicePicker = ({ index, onRemove, services, affinities, onValuesChange }) => {
   const [selectedService, setSelectedService] = useState('');
@@ -14,8 +14,8 @@ const ServicePicker = ({ index, onRemove, services, affinities, onValuesChange }
     setSelectedService(itemValue);
     
     try {
-      const providers = await getListServicesProvider(itemValue);
-      
+      const providers = await getListProvider(itemValue);
+      console.log(providers)
       setListProviders(providers); 
     } catch (error) {
       console.error('Erro ao obter colaboradores:', error);

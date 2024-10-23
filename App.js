@@ -9,9 +9,8 @@ import { addService, createTable } from './database/scheduleDB';
 import ServiceScreen from './screens/ServiceScreen';
 import ServiceEditScreen from './screens/ServiceEditScreen';
 import { useFonts } from 'expo-font';
-import ServiceProviderScreen from './screens/ServiceProviderScreen';
 import ServiceListScreen from './screens/ServiceListScreen'; // Importando a nova tela
-import ServiceProviderListScreen from './screens/ServiceProviderListScreen ';
+import ServiceProviderListScreen from './screens/ServiceProviderListScreen';
 import ServiceProviderEditScreen from './screens/ServiceProviderEditScreen';
 
 const Stack = createStackNavigator();
@@ -123,7 +122,7 @@ export default function App() {
                             fontFamily: 'LeagueSpartan-SemiBold'
                         }
                     }} />
-                <Drawer.Screen name="ServiceProviderEditScreen" component={ServiceProviderScreen}
+                <Drawer.Screen name="ServiceProviderEditScreen" component={ServiceProviderEditScreen}
                     options={{
                         title: 'Editar Colaborador',
                         headerStyle: {
@@ -156,7 +155,7 @@ export default function App() {
                             fontFamily: 'LeagueSpartan-SemiBold'
                         }
                     }} />
-                <Drawer.Screen name="ServiceProviderListScreen" component={ServiceProviderListScreen} options={{
+                <Drawer.Screen name="ServiceProviderList" component={ServiceProviderListScreen} options={{
                     title: 'Lista prestadores de Serviços',
                     headerStyle: {
                         backgroundColor: '#1A2833'
