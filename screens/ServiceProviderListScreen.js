@@ -14,7 +14,7 @@ const ServiceProviderListScreen = ({ navigation }) => {
         const providersData = await getServicesProvider();
         setServiceProviders(providersData);
       } catch (error) {
-        console.error('Erro ao buscar prestadores de serviço:', error);
+        console.error('Erro ao buscar o colaborador:', error);
       }
     };
 
@@ -35,9 +35,9 @@ const ServiceProviderListScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <BtnPadraoMenor propOnPress={() => navigation.navigate('ServiceProviderScreen')}>
-        Adicionar Prestador de Serviço
+        Adicionar Colaborador
       </BtnPadraoMenor>
-      <Txt text="Prestadores de Serviço" />
+      <Txt text="Colaborador" />
       {serviceProviders.length > 0 ? (
         <FlatList
           data={serviceProviders}
@@ -46,7 +46,7 @@ const ServiceProviderListScreen = ({ navigation }) => {
         />
       ) : (
         <Text style={{ color: '#E3E3E3', textAlign: 'center', marginTop: 20 }}>
-          Nenhum prestador de serviço encontrado.
+          Nenhum colaborador encontrado.
         </Text>
       )}
     </View>

@@ -184,7 +184,7 @@ console.log(serviceProvider)
 
   return (
     <ScrollView style={{ flex: 1, padding: 16, backgroundColor: "#1A2833" }}>
-      <Txt text={"Nome para o prestador do serviço:"} />
+      <Txt text={"Nome para o colaborador:"} />
       <Text style={{ color: "red" }}>{msgError.nameError}</Text>
       <TextInput
         value={name}

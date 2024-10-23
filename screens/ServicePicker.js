@@ -5,71 +5,77 @@ import Txt from '../components/Txt';
 import { getListProvider } from '../database/scheduleDB';
 
 const ServicePicker = ({ index, onRemove, services, affinities, onValuesChange }) => {
-  const [selectedService, setSelectedService] = useState('');
-  const [selectedAffinity, setSelectedAffinity] = useState(1);
-  const [listProviders, setListProviders] = useState([]);
+    const [selectedService, setSelectedService] = useState('');
+    const [selectedProvider, setSelectedProvider] = useState(''); // Armazenar o provider selecionado
+    const [selectedAffinity, setSelectedAffinity] = useState(1);
+    const [listProviders, setListProviders] = useState([]);
 
-  const handleServiceChange = async (itemValue) => {
-    console.log(itemValue)
-    setSelectedService(itemValue);
-    
-    try {
-      const providers = await getListProvider(itemValue);
-      console.log(providers)
-      setListProviders(providers); 
-    } catch (error) {
-      console.error('Erro ao obter colaboradores:', error);
-    }
-  
-    onValuesChange(index, itemValue, selectedAffinity);
-  };
+    const handleServiceChange = async (itemValue) => {
+        setSelectedService(itemValue);
+        setSelectedProvider(''); // Resetar o provider selecionado ao mudar o serviço
 
-  const handleAffinityChange = (itemValue) => {
-    setSelectedAffinity(itemValue);
-    onValuesChange(index, selectedService, itemValue);
-  };
+        try {
+            const providers = await getListProvider(itemValue);
+            setListProviders(providers);
+        } catch (error) {
+            console.error('Erro ao obter colaboradores:', error);
+        }
+        
+        onValuesChange(index, itemValue, selectedProvider, selectedAffinity); // Passar provider vazio
+    };
 
-  return (
-    <View style={styles.pickerContainer}>
-      <Txt text={"Selecione um Serviço:"} />
+    const handleProviderChange = (itemValue) => {
+        setSelectedProvider(itemValue);
+        onValuesChange(index, selectedService, itemValue, selectedAffinity); // Passar o provider selecionado
+    };
 
-      <Picker
-        selectedValue={selectedService}
-        onValueChange={handleServiceChange}
-        style={styles.picker}
-      >
-        {services.map((service) => (
-          <Picker.Item key={service.id} label={service.name} value={service.id} />
-        ))}
-      </Picker>
+    const handleAffinityChange = (itemValue) => {
+        setSelectedAffinity(itemValue);
+        onValuesChange(index, selectedService, selectedProvider, itemValue); // Passar a afinidade
+    };
 
-      <Txt text={"Selecione um Colaborador:"} />
-      <Picker
-        selectedValue={selectedAffinity}
-        onValueChange={handleAffinityChange}
-        style={styles.picker}
-      >
-        {listProviders.map((provider) => (
-          <Picker.Item key={provider.id} label={provider.name} value={provider.id} />
-        ))}
-      </Picker>
+    return (
+        <View style={styles.pickerContainer}>
+            <Txt text={"Selecione um Serviço:"} />
+            <Picker
+                selectedValue={selectedService}
+                onValueChange={handleServiceChange}
+                style={styles.picker}
+            >
+                {services.map((service) => (
+                    <Picker.Item key={service.id} label={service.name} value={service.id} />
+                ))}
+            </Picker>
 
-      <Button title="Remover" onPress={onRemove} />
-      <Txt text={`Serviço Selecionado: ${selectedService}`} />
-      <Txt text={`Afinidade Selecionada: ${selectedAffinity}`} />
-    </View>
-  );
+            <Txt text={"Selecione um Colaborador:"} />
+            <Picker
+                selectedValue={selectedProvider}
+                onValueChange={handleProviderChange} // Atualize para usar handleProviderChange
+                style={styles.picker}
+            >
+                {listProviders.map((provider) => (
+                    <Picker.Item key={provider.id} label={provider.name} value={provider.id} />
+                ))}
+            </Picker>
+
+            <Button title="Remover" onPress={onRemove} />
+            <Txt text={`Serviço Selecionado: ${selectedService}`} />
+            <Txt text={`Colaborador Selecionado: ${selectedProvider}`} />
+            <Txt text={`Afinidade Selecionada: ${selectedAffinity}`} />
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  pickerContainer: {
-    marginBottom: 20,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-    marginVertical: 10,
-  },
+    pickerContainer: {
+        marginBottom: 20,
+    },
+    picker: {
+        height: 50,
+        width: '100%',
+        marginVertical: 10,
+        color: '#E3E3E3',
+    },
 });
 
 export default ServicePicker;

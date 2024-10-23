@@ -3,7 +3,7 @@ import { Text, TextInput, Alert, ToastAndroid, ScrollView } from "react-native";
 import {
   updateServiceProvider,
   addServicesProvider,
-  getServices,
+  getServices, 
   addRelatesServicesProvider,
   getListServicesProvider,
   deleteServiceProvider,
@@ -66,7 +66,7 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
 
   const checkErrors = () => {
     if (!name.trim()) {
-      setMsgError({ nameError: "Digite um nome para o prestador de serviço" });
+      setMsgError({ nameError: "Digite um nome para o colaborador" });
       return true;
     }
     return false;
@@ -157,7 +157,7 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={{ flex: 1, padding: 16, backgroundColor: "#1A2833" }}>
-      <Txt text={"Nome para o prestador do serviço:"} />
+      <Txt text={"Nome para o colaborador:"} />
       <Text style={{ color: "red" }}>{msgError.nameError}</Text>
       <TextInput
         value={name}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid, ScrollView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices } from '../database/scheduleDB';
+import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices,addRelatesSchedulesServices } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadrao from '../components/BtnPadrao';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
@@ -10,7 +10,7 @@ import ServicePicker from './ServicePicker';
 function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
 }
-
+ 
 const AddScheduleScreen = ({ route, navigation }) => {
     const schedule = route.params?.schedule || {};
     const [name, setName] = useState(schedule.name || '');
@@ -19,7 +19,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [time, setTime] = useState(schedule.time || '');
     const [professional, setProfessional] = useState(schedule.professional || '');
     const [services, setServices] = useState([]); // Adicione estado para serviços
-    const [pickers, setPickers] = useState([{ serviceId: '', affinity: 1 }]); // Adicione pickers para serviços
+    const [pickers, setPickers] = useState([{ serviceId: '', providerId: '', affinity: 1 }]);
 
     const [msgError, setMsgError] = useState({
         nameError: '',
@@ -46,34 +46,32 @@ const AddScheduleScreen = ({ route, navigation }) => {
         fetchServices();
     }, []);
 
-    const handleValuesChange = (index, serviceId, affinity) => {
+    const handleValuesChange = (index, serviceId, providerId, affinity) => {
         const newPickers = [...pickers];
-        newPickers[index] = { serviceId, affinity };
+        newPickers[index] = { serviceId, providerId, affinity };
         setPickers(newPickers);
     };
 
     const addPicker = () => {
-        setPickers([...pickers, { serviceId: '', affinity: 1 }]);
+        setPickers([...pickers, { serviceId: '', providerId: '', affinity: 1 }]); // Adicione providerId aqui
     };
 
     const removePicker = (index) => {
         setPickers(pickers.filter((_, i) => i !== index));
     };
 
-const clearErrors = () =>{
-    setMsgError({
-        nameError: '',
-        phoneError: '',
-        timeError: '',
-        dateError: '',
-        serviceError: '',
-        professionalError: '',
-      });
-      
-}
+    const clearErrors = () => {
+        setMsgError({
+            nameError: '',
+            phoneError: '',
+            timeError: '',
+            dateError: '',
+            serviceError: '',
+            professionalError: '',
+        });
+    };
 
-    const checkErros = () => {
-
+    const checkErrors = () => {
         clearErrors();
 
         let error = false;
@@ -84,7 +82,7 @@ const clearErrors = () =>{
             }));
             error = true;
         } 
-         if (!phone.trim()) {
+        if (!phone.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
                 phoneError: 'Digite um número de telefone'
@@ -94,29 +92,20 @@ const clearErrors = () =>{
         if (!time.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
-                timeError: 'Selecione um horário para o agendamentos'
+                timeError: 'Selecione um horário para o agendamento'
             }));
             error = true;
         }
-        
-        //  if (!professional.trim()) {
-        //     setMsgError(prevState => ({
-        //         ...prevState,
-        //         professionalError: 'Digite um nome para um profissional'
-        //     }));
-        //     error = true;
-        // }
 
-        return error
-    }
+        return error;
+    };
+
     const saveSchedule = async () => {
         try {
-
-            if (checkErros() == true) {
+            if (checkErrors() === true) {
                 console.log("Erros encontrados, salvamento cancelado.");
                 return;
             }
-            const now = new Date();
             const selectedDateTime = new Date(date);
             const [hours, minutes] = time.split(':').map(Number);
             selectedDateTime.setHours(hours);
@@ -126,7 +115,7 @@ const clearErrors = () =>{
             const schedulesOnDate = await getSchedules(date.toISOString().split('T')[0]);
             const isConflict = schedulesOnDate.some(s => s.time === time && s.id !== schedule.id);
 
-            const newSchedule = { name, phone, date: date.toISOString().split('T')[0], time, services, professional };
+            const newSchedule = { name, phone, date: date.toISOString().split('T')[0], time, services: pickers, professional };
 
             if (isConflict) {
                 Alert.alert(
@@ -151,19 +140,39 @@ const clearErrors = () =>{
 
     const proceedSave = async (newSchedule) => {
         try {
+            let scheduleID;
             if (schedule.id) {
                 // Editar
                 await updateSchedule({ ...newSchedule, id: schedule.id });
                 showToast('Cadastro atualizado com sucesso');
             } else {
                 // Novo
-                await addSchedule(newSchedule);
-                showToast('Cadastro inserido com sucesso');
+                const result = await addSchedule(newSchedule);
+                scheduleID = result.lastInsertRowId;  // Obtém o ID do novo agendamento criado
             }
+
+
+            saveRelatedServices(scheduleID)
             navigation.navigate('Home', { refresh: true });
         } catch (error) {
             console.error('Erro ao salvar agendamento:', error);
             Alert.alert('Erro', 'Ocorreu um erro ao salvar o agendamento.');
+        }
+    };
+
+    const saveRelatedServices = async (scheduleID) => {
+        try {
+            await Promise.all(pickers.map(async (picker) => {
+                const relates = {
+                    idSchedules: scheduleID,
+                    idService: picker.serviceId,
+                    idProvider: picker.providerId, // Utilize o providerId aqui
+                };
+                await addRelatesSchedulesServices(relates);
+            }));
+        } catch (error) {
+            console.error("Erro ao salvar serviços relacionados:", error);
+            showToast("Erro ao salvar serviços relacionados.");
         }
     };
 
@@ -194,24 +203,16 @@ const clearErrors = () =>{
             setTime(`${hours}:${minutes}`);
         }
     };
-    const newSchedule = { name, phone, date: date.toISOString().split('T')[0], time, services: pickers, professional };
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
-
-    
-
-
 
     return (
         <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
             <Txt text={'Nome:'} />
-            <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16 }} />
+            <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16,  color: '#E3E3E3', }} />
             <Txt text={'Telefone:'} />
-            <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16 }} />
+            <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16,  color: '#E3E3E3', }} />
 
             <Txt text={'Data:'} />
             <Text style={{ color: 'red' }}>{msgError.dateError}</Text>
-
             <BtnPadraoMenor propOnPress={() => setShowDatePicker(true)}>Selecionar Data</BtnPadraoMenor>
 
             {showDatePicker && (
@@ -223,13 +224,10 @@ const clearErrors = () =>{
                 />
             )}
 
-
-            <Txt text={date.toLocaleDateString('pt-BR', options)} />
-
+            <Txt text={date.toLocaleDateString('pt-BR')} />
 
             <Txt text={'Horário:'} />
             <Text style={{ color: 'red' }}>{msgError.timeError}</Text>
-
             <BtnPadraoMenor propOnPress={() => setShowTimePicker(true)}>Selecionar Horário</BtnPadraoMenor>
 
             {showTimePicker && (
@@ -241,7 +239,6 @@ const clearErrors = () =>{
                 />
             )}
             <Txt text={time} />
-
 
             {pickers.map((picker, index) => (
                 <ServicePicker

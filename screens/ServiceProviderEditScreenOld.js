@@ -72,7 +72,7 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
     if (!name.trim()) {
       setMsgError((prevState) => ({
         ...prevState,
-        nameError: "Digite um nome para o prestador do serviço",
+        nameError: "Digite um nome para o colaborador",
       }));
       error = true;
     }
@@ -181,7 +181,7 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
   return (
 
     <ScrollView style={{ flex: 1, padding: 16, backgroundColor: "#1A2833" }}>
-      <Txt text={"Nome para o prestador do serviço:"} />
+      <Txt text={"Nome para o colaborador:"} />
       <Text style={{ color: "red" }}>{msgError.nameError}</Text>
       <TextInput
         value={name}

@@ -37,47 +37,45 @@ export const createTable = async () => {
     await db.execAsync(`
             PRAGMA journal_mode = WAL;
 
-
-
+          
             CREATE TABLE IF NOT EXISTS schedules (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                date TEXT NOT NULL,
-                time TEXT NOT NULL,
-                service TEXT NOT NULL,
-                professional TEXT
-            );
-              
-            CREATE TABLE IF NOT EXISTS services (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                description TEXT NOT NULL,
-                favorite BLOB NOT NULL
-            );
-              
-              
-            CREATE TABLE IF NOT EXISTS servicesProvider (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
-           
-            );
-
-             CREATE TABLE IF NOT EXISTS relatesServicesProvider (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                idService INTEGER NOT NULL,
-                idProvider INTEGER NOT NULL,
-                affinity INTEGER NOT NULL
-           
-            );
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              name TEXT NOT NULL,
+              phone TEXT NOT NULL,
+              date TEXT NOT NULL,
+              time TEXT NOT NULL
+          );
             
-             CREATE TABLE IF NOT EXISTS relatesServiceSchedule(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                idService INTEGER NOT NULL,
-                idSchedules INTEGER NOT NULL,
-                idProvider INTEGER NOT NULL
-           
-            );
+
+          CREATE TABLE IF NOT EXISTS services (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              name TEXT NOT NULL,
+              description TEXT NOT NULL,
+              favorite BLOB NOT NULL
+          );
+            
+            
+          CREATE TABLE IF NOT EXISTS servicesProvider (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              name TEXT NOT NULL
+         
+          );
+
+           CREATE TABLE IF NOT EXISTS relatesServicesProvider (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              idService INTEGER NOT NULL,
+              idProvider INTEGER NOT NULL,
+              affinity INTEGER NOT NULL
+         
+          );
+          
+           CREATE TABLE IF NOT EXISTS relatesServiceSchedule(
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              idService INTEGER NOT NULL,
+              idSchedules INTEGER NOT NULL,
+              idProvider INTEGER NOT NULL
+         
+          );
 
 
         `);
@@ -105,7 +103,7 @@ export const addSchedule = async (schedule) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      "INSERT INTO schedules (name, phone, date, time, service, professional) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO schedules (name, phone, date, time) VALUES (?, ?, ?, ?)",
       [
         schedule.name,
         schedule.phone,
@@ -138,6 +136,29 @@ export const addRelatesServicesProvider = async (relatesServicesProvider) => {
     throw error;
   }
 };
+
+
+export const addRelatesSchedulesServices = async (relatesServicesProvider) => {
+  console.log('aqui')
+  console.log(relatesServicesProvider)
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+  
+      "INSERT INTO relatesServiceSchedule (idSchedules,idService,idProvider) VALUES (?,?,?)",
+      [
+        relatesServicesProvider.idSchedules,
+        relatesServicesProvider.idService,
+        relatesServicesProvider.idProvider,
+      ]
+    );
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export const getRelatesServicesProvider = async () => {
   try {
