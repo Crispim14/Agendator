@@ -12,6 +12,8 @@ import { useFonts } from 'expo-font';
 import ServiceListScreen from './screens/ServiceListScreen'; // Importando a nova tela
 import ServiceProviderListScreen from './screens/ServiceProviderListScreen';
 import ServiceProviderEditScreen from './screens/ServiceProviderEditScreen';
+import CreateScheduleScreen from './screens/CreateScheduleScreen';
+import EditScheduleScreen from './screens/EditScheduleScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -58,7 +60,7 @@ export default function App() {
 
                 }} />
 
-                <Drawer.Screen name="AddSchedule" component={AddScheduleScreen}
+                <Drawer.Screen name="AddSchedule" component={CreateScheduleScreen}
                     options={{
                         title: 'Novo Agendamento',
                         headerStyle: {
@@ -169,6 +171,25 @@ export default function App() {
                         fontFamily: 'LeagueSpartan-SemiBold'
                     }
                 }} />
+                <Drawer.Screen name="EditSchedule" component={EditScheduleScreen}
+                    options={{
+                        title: 'Novo Agendamento',
+                        headerStyle: {
+                            backgroundColor: '#1A2833'
+                        },
+                        headerTitleStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-Bold'
+                        },
+                        drawerLabelStyle: {
+                            color: '#E3E3E3',
+                            fontFamily: 'LeagueSpartan-SemiBold'
+                        },
+                        drawerItemStyle: {
+                            display: 'none' // Isso remove o botão do Drawer
+                        }
+
+                    }} />
             </Drawer.Navigator>
         </NavigationContainer>
 

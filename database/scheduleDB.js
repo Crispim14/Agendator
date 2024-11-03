@@ -1,7 +1,7 @@
 // database/scheduleDB.js
 import * as SQLite from "expo-sqlite";
 
-// Função para abrir o banco de dados
+// Função para abrir o banco de dados de forma assíncrona usando openDatabaseAsync
 const openDatabase = async () => {
   try {
     const db = await SQLite.openDatabaseAsync("schedules.db");
@@ -9,114 +9,73 @@ const openDatabase = async () => {
   } catch (error) {
     throw error;
   }
-}; 
-
-// // Função para criar a tabela se não existir
-// export const dropTable = async () => {
-//   try {
-//     const db = await openDatabase();
-//     await db.execAsync(`
-//             PRAGMA journal_mode = WAL;
-
-
-// DROP TABLE IF EXISTS schedules;
-// DROP TABLE IF  EXISTS relatesServicesProvider; 
-//               DROP TABLE IF  EXISTS servicesProvider; 
-//             DROP TABLE IF  EXISTS services;
-
-//         `);
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
-// Função para criar a tabela se não existir
-export const createTable = async () => {
-  try {
-    const db = await openDatabase();
-    await db.execAsync(`
-            PRAGMA journal_mode = WAL;
-
-          
-            CREATE TABLE IF NOT EXISTS schedules (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              name TEXT NOT NULL,
-              phone TEXT NOT NULL,
-              date TEXT NOT NULL,
-              time TEXT NOT NULL
-          );
-            
-
-          CREATE TABLE IF NOT EXISTS services (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              name TEXT NOT NULL,
-              description TEXT NOT NULL,
-              favorite BLOB NOT NULL
-          );
-            
-            
-          CREATE TABLE IF NOT EXISTS servicesProvider (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              name TEXT NOT NULL
-         
-          );
-
-           CREATE TABLE IF NOT EXISTS relatesServicesProvider (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              idService INTEGER NOT NULL,
-              idProvider INTEGER NOT NULL,
-              affinity INTEGER NOT NULL
-         
-          );
-          
-           CREATE TABLE IF NOT EXISTS relatesServiceSchedule(
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              idService INTEGER NOT NULL,
-              idSchedules INTEGER NOT NULL,
-              idProvider INTEGER NOT NULL
-         
-          );
-
-
-        `);
-  } catch (error) {
-    throw error;
-  }
 };
 
+// Função para criar as tabelas se não existirem
+export const createTable = async () => {
+  const db = await openDatabase();
+  await db.execAsync([
+    {
+      sql: `
+        PRAGMA journal_mode = WAL;
+
+        CREATE TABLE IF NOT EXISTS schedules (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          date TEXT NOT NULL,
+          time TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS services (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          description TEXT NOT NULL,
+          favorite BLOB NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS servicesProvider (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS relatesServicesProvider (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          idService INTEGER NOT NULL,
+          idProvider INTEGER NOT NULL,
+          affinity INTEGER NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS relatesServiceSchedule (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          idService INTEGER NOT NULL,
+          idSchedules INTEGER NOT NULL,
+          idProvider INTEGER NOT NULL
+        );
+      `,
+      args: []
+    }
+  ]);
+};
+
+// Função para adicionar um serviço
 export const addService = async (service) => {
-  try {
-    const db = await openDatabase();
-    const result = await db.runAsync(
-      "INSERT INTO services (name, description,favorite) VALUES (?, ?, ?)",
-      [service.name, service.description,service.favorite]
-    );
-   
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  const db = await openDatabase();
+  const result = await db.execAsync(
+    "INSERT INTO services (name, description, favorite) VALUES (?, ?, ?)",
+    [service.name, service.description, service.favorite]
+  );
+  return result;
 };
 
 // Função para adicionar um agendamento
 export const addSchedule = async (schedule) => {
-  try {
-    const db = await openDatabase();
-    const result = await db.runAsync(
-      "INSERT INTO schedules (name, phone, date, time) VALUES (?, ?, ?, ?)",
-      [
-        schedule.name,
-        schedule.phone,
-        schedule.date,
-        schedule.time,
-        schedule.service,
-        schedule.professional,
-      ]
-    );
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  const db = await openDatabase();
+  const result = await db.execAsync(
+    "INSERT INTO schedules (name, phone, date, time) VALUES (?, ?, ?, ?)",
+    [schedule.name, schedule.phone, schedule.date, schedule.time]
+  );
+  return result;
 };
 
 export const addRelatesServicesProvider = async (relatesServicesProvider) => {
@@ -201,33 +160,23 @@ export const getLastServicesProvider = async () => {
   }
 };
 
+// Função para obter agendamentos em uma data específica
 export const getSchedules = async (date) => {
-  try {
-    createTable();
-    const db = await openDatabase();
-    const result = await db.getAllAsync(
-      "SELECT * FROM schedules WHERE date = ? ORDER BY time ASC",
-      [date]
-    );
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  const db = await openDatabase();
+  const result = await db.getAllAsync(
+    "SELECT * FROM schedules WHERE date = ? ORDER BY time ASC",
+    [date]
+  );
+  return result;
 };
 
+// Função para obter todos os serviços, ordenados por favoritos e nome
 export const getServices = async () => {
-  try {
-    createTable(); // Cria a tabela se não existir
-    const db = await openDatabase();
-    const result = await db.getAllAsync(
-      "SELECT * FROM services ORDER BY favorite DESC, name ASC"
-    );
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  const db = await openDatabase();
+  const result = await db.getAllAsync(
+    "SELECT * FROM services ORDER BY favorite DESC, name ASC"
+  );
+  return result;
 };
 
 export const getServicesProvider = async () => {
@@ -293,17 +242,14 @@ export const getTeste = async () => {
   }
 };
 
+// Função para deletar um agendamento
 export const deleteSchedule = async (id) => {
-  try {
-    const db = await openDatabase();
-    const result = await db.runAsync("DELETE FROM schedules WHERE id = ?", [
-      id,
-    ]);
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  const db = await openDatabase();
+  const result = await db.execAsync(
+    "DELETE FROM schedules WHERE id = ?",
+    [id]
+  );
+  return result;
 };
 
 export const deleteService = async (id) => {
@@ -319,40 +265,22 @@ export const deleteService = async (id) => {
 
 // Função para atualizar um agendamento existente
 export const updateSchedule = async (schedule) => {
-  try {
-    const db = await openDatabase();
-    const result = await db.runAsync(
-      "UPDATE schedules SET name = ?, phone = ?, date = ?, time = ?, service = ?, professional = ? WHERE id = ?",
-      [
-        schedule.name,
-        schedule.phone,
-        schedule.date,
-        schedule.time,
-        schedule.service,
-        schedule.professional,
-        schedule.id,
-      ]
-    );
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  const db = await openDatabase();
+  const result = await db.execAsync(
+    "UPDATE schedules SET name = ?, phone = ?, date = ?, time = ? WHERE id = ?",
+    [schedule.name, schedule.phone, schedule.date, schedule.time, schedule.id]
+  );
+  return result;
 };
 
+// Função para atualizar um serviço
 export const updateService = async (service) => {
-  try {
-    console.log(service)
-    const db = await openDatabase();
-    const result = await db.runAsync(
-      "UPDATE services SET name = ?, description = ?, favorite = ? WHERE id = ?",
-      [service.name, service.description, service.favorite, service.id]
-    );
-
-    return result;
-  } catch (error) {
-    throw error;
-  }
+  const db = await openDatabase();
+  const result = await db.execAsync(
+    "UPDATE services SET name = ?, description = ?, favorite = ? WHERE id = ?",
+    [service.name, service.description, service.favorite, service.id]
+  );
+  return result;
 };
 
 export const updateServiceProvider = async (serviceProvider) => {
