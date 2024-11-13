@@ -1,35 +1,32 @@
-// screens/HomeScreen.js
+// HomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Button, Platform } from 'react-native';
+import { View, Text, FlatList, Pressable, Button, Platform, StyleSheet } from 'react-native';
 import { getSchedules, getServices } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BtnPadrao from '../components/BtnPadrao';
 import SttsBar from '../components/SttsBar';
-
+import { useTheme } from '../ThemeContext';
 
 const HomeScreen = ({ navigation }) => {
+    const { theme, toggleTheme } = useTheme(); // Obtém o tema e a função para alternar o tema
     const [schedules, setSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [date, setDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     const onChangeDate = (event, selectedDate) => {
         setShowDatePicker(false);
-
         if (selectedDate) {
-
-            setDate(selectedDate)
-            setSelectedDate(selectedDate.toISOString().split('T')[0])
+            setDate(selectedDate);
+            setSelectedDate(selectedDate.toISOString().split('T')[0]);
         }
     };
-    const [showDatePicker, setShowDatePicker] = useState(false);
 
     useEffect(() => {
         const fetchSchedules = async () => {
             try {
                 const schedulesData = await getSchedules(selectedDate);
-                const x = await getServices(selectedDate);
-                //console.log(x)
                 setSchedules(schedulesData);
             } catch (error) {
                 console.error('Erro ao buscar agendamentos:', error);
@@ -38,30 +35,22 @@ const HomeScreen = ({ navigation }) => {
 
         fetchSchedules();
 
-        // Adicionando um listener para atualizar a tela ao voltar para ela
-        const unsubscribe = navigation.addListener('focus', () => {
-            fetchSchedules();
-        });
+        const unsubscribe = navigation.addListener('focus', fetchSchedules);
 
-        // Cleanup do listener
         return unsubscribe;
     }, [navigation, selectedDate]);
 
     const renderItem = ({ item }) => (
         <Pressable onPress={() => navigation.navigate('AddSchedule', { schedule: item })}>
-            <View style={{
-                padding: 20,
-                marginVertical: 8,
-                backgroundColor: new Date(`${item.date}T${item.time}`) < new Date() ? 'red' : '#0CABA8'
-            }}>
+            <View style={[styles.itemContainer, { backgroundColor: new Date(`${item.date}T${item.time}`) < new Date() ? 'red' : '#0CABA8' }]}>
                 <Txt text={`${item.time} - ${item.name}`} />
                 <Txt text={`Serviço ${item.service}`} />
             </View>
-        </Pressable>);
+        </Pressable>
+    );
 
     return (
-
-        <View style={{ flex: 1, backgroundColor: '#1A2833' }}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             <SttsBar />
 
             {showDatePicker && (
@@ -73,18 +62,14 @@ const HomeScreen = ({ navigation }) => {
                 />
             )}
 
-            <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 10, fontFamily: 'LeagueSpartan-Regular' }}>{`Data selecionada ${selectedDate}`}</Text>
+            <Text style={[styles.text, { color: theme.text }]}>{`Data selecionada ${selectedDate}`}</Text>
 
             <BtnPadrao propOnPress={() => navigation.navigate('AddSchedule')}>
-
-                <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 20 }}>Novo Agendamento</Text>
-
+                <Text style={[styles.btnText, { color: theme.text }]}>Novo Agendamento</Text>
             </BtnPadrao>
 
             <BtnPadrao propOnPress={() => setShowDatePicker(true)}>
-
-                <Text style={{ fontSize: 20, color: '#E3E3E3', textAlign: 'center', margin: 20 }}>Mudar Data</Text>
-
+                <Text style={[styles.btnText, { color: theme.text }]}>Mudar Data</Text>
             </BtnPadrao>
 
             <FlatList
@@ -92,8 +77,36 @@ const HomeScreen = ({ navigation }) => {
                 renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
             />
+
+            <Button
+                title="Alternar Tema"
+                onPress={toggleTheme}
+                color={theme.text}
+            />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+    },
+    text: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 10,
+        fontFamily: 'LeagueSpartan-Regular',
+    },
+    btnText: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 20,
+    },
+    itemContainer: {
+        padding: 20,
+        marginVertical: 8,
+    },
+});
 
 export default HomeScreen;

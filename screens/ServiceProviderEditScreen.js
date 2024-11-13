@@ -11,31 +11,33 @@ import {
 import Txt from "../components/Txt";
 import BtnPadraoMenor from "../components/BtnPadraoMenor";
 import ServiceProviderPicker from './ServiceProviderPicker';
+import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
 
 function showToast(text) {
   ToastAndroid.show(text, ToastAndroid.SHORT);
 }
 
 const ServiceProviderEditScreen = ({ route, navigation }) => {
+  const { theme } = useTheme(); // Obtém o tema atual
   const serviceProvider = route.params?.serviceProvider || {};
   const [name, setName] = useState(serviceProvider.name || "");
   const [pickers, setPickers] = useState([{ serviceId: '', affinity: 1 }]);
-  const [relatedServices, setRelatedServices] = useState([]);  // Armazena apenas os serviços relacionados ao colaborador
-  const [allServices, setAllServices] = useState([]);  // Todos os serviços disponíveis
+  const [relatedServices, setRelatedServices] = useState([]);
+  const [allServices, setAllServices] = useState([]);
   const [msgError, setMsgError] = useState({ nameError: '' });
 
   useEffect(() => {
     if (serviceProvider.id) {
       setName(serviceProvider.name);
-      loadRelatedServices(serviceProvider.id);  // Carrega os serviços relacionados ao colaborador
+      loadRelatedServices(serviceProvider.id);
     }
-    fetchAllServices();  // Carrega todos os serviços disponíveis, mas não os exibe imediatamente
+    fetchAllServices();
   }, [serviceProvider]);
 
   const fetchAllServices = async () => {
     try {
       const result = await getServices();
-      setAllServices(result);  // Carrega a lista de todos os serviços disponíveis, mas não a usa na edição inicial
+      setAllServices(result);
     } catch (error) {
       console.error("Erro ao buscar serviços:", error);
     }
@@ -43,16 +45,16 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
 
   const loadRelatedServices = async (providerId) => {
     try {
-      const related = await getListServicesProvider(providerId);  // Obtém apenas os serviços relacionados
+      const related = await getListServicesProvider(providerId);
       if (related.length > 0) {
         const pickersData = related.map((item) => ({
-          serviceId: item.id,   // Garante que o ID correto de cada serviço relacionado seja obtido
-          affinity: item.affinity,  // Garante que a afinidade correta seja obtida
+          serviceId: item.id,
+          affinity: item.affinity,
         }));
-        setPickers(pickersData);  // Atualiza os pickers com os serviços e afinidades relacionados
-        setRelatedServices(related);  // Armazena os serviços relacionados
+        setPickers(pickersData);
+        setRelatedServices(related);
       } else {
-        setPickers([{ serviceId: '', affinity: 1 }]);  // Inicializa com um picker vazio se não houver serviços
+        setPickers([{ serviceId: '', affinity: 1 }]);
       }
     } catch (error) {
       console.error("Erro ao carregar serviços relacionados:", error);
@@ -85,29 +87,28 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
         showToast('Colaborador atualizado com sucesso');
       } else {
         const result = await addServicesProvider(newServiceProvider);
-        providerId = result.lastInsertRowId;  // Obtém o ID do novo colaborador criado
+        providerId = result.lastInsertRowId;
         showToast('Colaborador adicionado com sucesso');
       }
 
-      await saveRelatedServices(providerId);  // Passamos o ID correto
+      await saveRelatedServices(providerId);
       clearFormData();
       navigation.navigate("ServiceProviderList", { refresh: true });
     } catch (error) {
       console.error('Erro ao salvar o colaborador:', error);
       showToast("Ocorreu um erro ao salvar o colaborador.");
     }
-
   };
 
   const saveRelatedServices = async (providerId) => {
     try {
       await Promise.all(pickers.map(async (picker) => {
         const relates = {
-          idProvider: providerId,  // Certifica-se de que o ID correto é passado
+          idProvider: providerId,
           idService: picker.serviceId,
           affinity: picker.affinity,
         };
-        await addRelatesServicesProvider(relates);  // Salva o relacionamento serviço/afinidade
+        await addRelatesServicesProvider(relates);
       }));
     } catch (error) {
       console.error("Erro ao salvar serviços relacionados:", error);
@@ -145,7 +146,6 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
   };
 
   const addPicker = () => {
-    // Adiciona um novo picker com a lista completa de serviços
     setPickers([...pickers, { serviceId: '', affinity: 1 }]);
   };
 
@@ -156,13 +156,13 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
   };
 
   return (
-    <ScrollView style={{ flex: 1, padding: 16, backgroundColor: "#1A2833" }}>
+    <ScrollView style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
       <Txt text={"Nome para o colaborador:"} />
-      <Text style={{ color: "red" }}>{msgError.nameError}</Text>
+      <Text style={{ color: 'red' }}>{msgError.nameError}</Text>
       <TextInput
         value={name}
         onChangeText={setName}
-        style={{ borderBottomWidth: 1, marginBottom: 16, color: "#E3E3E3" }}
+        style={{ borderBottomWidth: 1, marginBottom: 16, color: theme.text }}
       />
 
       {pickers.map((picker, index) => (
@@ -170,11 +170,11 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
           key={index}
           index={index}
           onRemove={() => removePicker(index)}
-          services={allServices}  // Passa a lista de todos os serviços disponíveis para cada picker
+          services={allServices}
           affinities={[1, 2, 3, 4, 5]}
           onValuesChange={handleValuesChange}
-          initialServiceId={picker.serviceId}  // Certifique-se de que o ID correto do serviço está sendo passado
-          initialAffinity={picker.affinity}  // Certifique-se de que a afinidade correta está sendo passada
+          initialServiceId={picker.serviceId}
+          initialAffinity={picker.affinity}
         />
       ))}
       <BtnPadraoMenor propOnPress={addPicker}>Adicionar Serviço</BtnPadraoMenor>

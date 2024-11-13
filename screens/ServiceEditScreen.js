@@ -5,6 +5,7 @@ import { deleteService, updateService, addService } from '../database/scheduleDB
 import Txt from '../components/Txt';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
 import Checkbox from 'expo-checkbox'; // Importando o Checkbox do expo-checkbox
+import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
 
 
 function showToast(text) {
@@ -12,6 +13,7 @@ function showToast(text) {
 }
 
 const ServiceEditScreen = ({ route, navigation }) => {
+    const { theme } = useTheme(); // Obtém o tema atual
     const service = route.params?.service || {};
     console.log(service)
     const [name, setName] = useState(service.name || '');
@@ -43,7 +45,6 @@ const ServiceEditScreen = ({ route, navigation }) => {
     };
 
 
-        
     const handleFavorite = () => {
         setIsFavorite(prev => {
             console.log("isFavorite antes: ", prev);
@@ -52,8 +53,7 @@ const ServiceEditScreen = ({ route, navigation }) => {
             return newValue;
         });
     };
-          
-      
+
 
     const clearErrors = () => {
         setMsgError({
@@ -87,8 +87,8 @@ const ServiceEditScreen = ({ route, navigation }) => {
             if (checkErrors()) {
                 return;
             }
-            const newService = { name, description, favorite: isFavorite ? 1 : 0 }; 
-         
+            const newService = { name, description, favorite: isFavorite ? 1 : 0 };
+
             proceedSave(newService);
         } catch (error) {
             showToast('Ocorreu um erro ao salvar o serviço.');
@@ -102,7 +102,6 @@ const ServiceEditScreen = ({ route, navigation }) => {
                 await updateService({ ...newService, id: service.id });
                 showToast('Serviço atualizado com sucesso');
             } else {
-               
                 await addService(newService);
                 showToast('Serviço inserido com sucesso');
             }
@@ -129,24 +128,23 @@ const ServiceEditScreen = ({ route, navigation }) => {
         try {
             if (service.id) {
                 await deleteService(service.id);
-              
+
                 showToast('Serviço deletado com sucesso');
                 navigation.navigate('Home', { refresh: true });
             }
         } catch (error) {
-          
             showToast('Ocorreu um erro ao excluir o serviço.');
         }
     };
 
     return (
-        <View style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
+        <View style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
             <Txt text={'Nome do serviço:'} />
             <Text style={{ color: 'red' }}>{msgError.nameError}</Text>
             <TextInput
                 value={name}
                 onChangeText={setName}
-                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }}
+                style={{ borderBottomWidth: 1, marginBottom: 16, color: theme.text }}
             />
 
             <Txt text={'Descrição do serviço:'} />
@@ -154,21 +152,25 @@ const ServiceEditScreen = ({ route, navigation }) => {
             <TextInput
                 value={description}
                 onChangeText={setDescription}
-                style={{ borderBottomWidth: 1, marginBottom: 16, color: '#E3E3E3' }}
+                style={{ borderBottomWidth: 1, marginBottom: 16, color: theme.text }}
             />
- 
- <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-    <Checkbox
-        value={isFavorite}
-        onValueChange={handleFavorite}
-        color={isFavorite ? '#FFD700' : '#E3E3E3'}
-    />
-    <Txt text="Favorito" />
-</View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                <Checkbox
+                    value={isFavorite}
+                    onValueChange={handleFavorite}
+                    color={isFavorite ? '#FFD700' : theme.text}
+                />
+                <Txt text="Favorito" />
+            </View>
 
             <BtnPadraoMenor propOnPress={clearFormData}>Limpar Campos</BtnPadraoMenor>
             <BtnPadraoMenor propOnPress={saveService}>Salvar</BtnPadraoMenor>
-            {service.id && <BtnPadraoMenor propOnPress={confirmDeleteService} bgColor="red">Excluir</BtnPadraoMenor>}
+            {service.id && (
+                <BtnPadraoMenor propOnPress={confirmDeleteService} bgColor="red">
+                    Excluir
+                </BtnPadraoMenor>
+            )}
         </View>
     );
 };

@@ -5,17 +5,16 @@ import Txt from '../components/Txt';
 import BtnItemList from '../components/BtnItemList';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
 import BtnPadrao from '../components/BtnPadrao';
+import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
 
 const ServiceListScreen = ({ navigation }) => {
+    const { theme } = useTheme(); // Obtém o tema atual
     const [services, setServices] = useState([]);
 
     useEffect(() => {
         const fetchServices = async () => {
             try {
                 const servicesData = await getServices();
-
-
-                //console.log('Serviços carregados:', servicesData);
                 setServices(servicesData);
             } catch (error) {
                 console.error('Erro ao buscar serviços:', error);
@@ -33,19 +32,16 @@ const ServiceListScreen = ({ navigation }) => {
         <BtnItemList
             propOnPress={() => navigation.navigate('ServiceEditScreen', { service: item })}
         >
-            <Txt text={item.name} />
+            <Txt text={item.name} style={{ color: theme.text }} />
         </BtnItemList>
     );
 
-    return ( 
-
-
-
-        <View style={styles.container}>
-
-            <BtnPadraoMenor propOnPress={() => navigation.navigate('ServiceScreen')}>Adicionar Serviço</BtnPadraoMenor>
-
-            <Txt text="Serviços" />
+    return (
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <BtnPadraoMenor propOnPress={() => navigation.navigate('ServiceScreen')}>
+                Adicionar Serviço
+            </BtnPadraoMenor>
+            <Txt text="Serviços" style={{ color: theme.text }} />
             <FlatList
                 data={services}
                 renderItem={renderServiceItem}
@@ -59,7 +55,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#1A2833',
     },
     serviceItem: {
         padding: 16,

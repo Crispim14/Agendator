@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid, ScrollView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices,addRelatesSchedulesServices } from '../database/scheduleDB';
+import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices, addRelatesSchedulesServices } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadrao from '../components/BtnPadrao';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
 import ServicePicker from './ServicePicker';
+import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
 
 function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
 }
- 
+
 const AddScheduleScreen = ({ route, navigation }) => {
+    const { theme } = useTheme(); // Obtém o tema atual
     const schedule = route.params?.schedule || {};
     const [name, setName] = useState(schedule.name || '');
     const [phone, setPhone] = useState(schedule.phone || '');
     const [date, setDate] = useState(schedule.date ? new Date(schedule.date) : new Date());
     const [time, setTime] = useState(schedule.time || '');
     const [professional, setProfessional] = useState(schedule.professional || '');
-    const [services, setServices] = useState([]); // Adicione estado para serviços
+    const [services, setServices] = useState([]);
     const [pickers, setPickers] = useState([{ serviceId: '', providerId: '', affinity: 1 }]);
-
     const [msgError, setMsgError] = useState({
         nameError: '',
         phoneError: '',
@@ -33,7 +34,6 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
-    // Carregue os serviços
     useEffect(() => {
         const fetchServices = async () => {
             try {
@@ -53,7 +53,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
     };
 
     const addPicker = () => {
-        setPickers([...pickers, { serviceId: '', providerId: '', affinity: 1 }]); // Adicione providerId aqui
+        setPickers([...pickers, { serviceId: '', providerId: '', affinity: 1 }]);
     };
 
     const removePicker = (index) => {
@@ -73,7 +73,6 @@ const AddScheduleScreen = ({ route, navigation }) => {
 
     const checkErrors = () => {
         clearErrors();
-
         let error = false;
         if (!name.trim()) {
             setMsgError(prevState => ({
@@ -111,10 +110,8 @@ const AddScheduleScreen = ({ route, navigation }) => {
             selectedDateTime.setHours(hours);
             selectedDateTime.setMinutes(minutes);
 
-            // Verificar se já existe um agendamento para o mesmo horário e data
             const schedulesOnDate = await getSchedules(date.toISOString().split('T')[0]);
             const isConflict = schedulesOnDate.some(s => s.time === time && s.id !== schedule.id);
-
             const newSchedule = { name, phone, date: date.toISOString().split('T')[0], time, services: pickers, professional };
 
             if (isConflict) {
@@ -127,10 +124,8 @@ const AddScheduleScreen = ({ route, navigation }) => {
                     ],
                     { cancelable: true }
                 );
-                return; // Saia para não salvar até que o usuário confirme
+                return;
             }
-
-            // Continuar com o salvamento se não houver conflitos ou após confirmação
             proceedSave(newSchedule);
         } catch (error) {
             console.error('Erro ao salvar agendamento:', error);
@@ -142,17 +137,14 @@ const AddScheduleScreen = ({ route, navigation }) => {
         try {
             let scheduleID;
             if (schedule.id) {
-                // Editar
                 await updateSchedule({ ...newSchedule, id: schedule.id });
                 showToast('Cadastro atualizado com sucesso');
             } else {
-                // Novo
                 const result = await addSchedule(newSchedule);
-                scheduleID = result.lastInsertRowId;  // Obtém o ID do novo agendamento criado
+                scheduleID = result.lastInsertRowId;
             }
 
-
-            saveRelatedServices(scheduleID)
+            saveRelatedServices(scheduleID);
             navigation.navigate('Home', { refresh: true });
         } catch (error) {
             console.error('Erro ao salvar agendamento:', error);
@@ -166,7 +158,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
                 const relates = {
                     idSchedules: scheduleID,
                     idService: picker.serviceId,
-                    idProvider: picker.providerId, // Utilize o providerId aqui
+                    idProvider: picker.providerId,
                 };
                 await addRelatesSchedulesServices(relates);
             }));
@@ -190,9 +182,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
 
     const onChangeDate = (event, selectedDate) => {
         setShowDatePicker(false);
-        if (selectedDate) {
-            setDate(selectedDate);
-        }
+        if (selectedDate) setDate(selectedDate);
     };
 
     const onChangeTime = (event, selectedTime) => {
@@ -205,11 +195,11 @@ const AddScheduleScreen = ({ route, navigation }) => {
     };
 
     return (
-        <ScrollView style={{ flex: 1, padding: 16, backgroundColor: '#1A2833' }}>
+        <ScrollView style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
             <Txt text={'Nome:'} />
-            <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16,  color: '#E3E3E3', }} />
+            <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16, color: theme.text }} />
             <Txt text={'Telefone:'} />
-            <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16,  color: '#E3E3E3', }} />
+            <TextInput value={phone} onChangeText={setPhone} style={{ borderBottomWidth: 1, marginBottom: 16, color: theme.text }} />
 
             <Txt text={'Data:'} />
             <Text style={{ color: 'red' }}>{msgError.dateError}</Text>

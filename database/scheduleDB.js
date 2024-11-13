@@ -51,7 +51,8 @@ export const createTable = async () => {
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               name TEXT NOT NULL,
               description TEXT NOT NULL,
-              favorite BLOB NOT NULL
+              favorite BLOB NOT NULL,
+              ramo INTEGER NOT NULL
           );
             
             

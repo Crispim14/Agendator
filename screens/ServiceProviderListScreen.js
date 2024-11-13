@@ -4,8 +4,10 @@ import { getServicesProvider } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnItemList from '../components/BtnItemList';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
+import { useTheme } from '../ThemeContext'; 
 
 const ServiceProviderListScreen = ({ navigation }) => {
+  const { theme } = useTheme(); 
   const [serviceProviders, setServiceProviders] = useState([]);
 
   useEffect(() => {
@@ -26,18 +28,18 @@ const ServiceProviderListScreen = ({ navigation }) => {
 
   const renderServiceProviderItem = ({ item }) => (
     <BtnItemList
-      propOnPress={() => navigation.navigate('ServiceProviderEditScreen', { serviceProvider: item })} // Corrigido para 'serviceProvider'
+      propOnPress={() => navigation.navigate('ServiceProviderEditScreen', { serviceProvider: item })}
     >
-      <Txt text={item.name} />
+      <Txt text={item.name} style={{ color: theme.text }} />
     </BtnItemList>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <BtnPadraoMenor propOnPress={() => navigation.navigate('ServiceProviderScreen')}>
         Adicionar Colaborador
       </BtnPadraoMenor>
-      <Txt text="Colaborador" />
+      <Txt text="Colaborador" style={{ color: theme.text }} />
       {serviceProviders.length > 0 ? (
         <FlatList
           data={serviceProviders}
@@ -45,7 +47,7 @@ const ServiceProviderListScreen = ({ navigation }) => {
           keyExtractor={item => item.id.toString()}
         />
       ) : (
-        <Text style={{ color: '#E3E3E3', textAlign: 'center', marginTop: 20 }}>
+        <Text style={{ color: theme.text, textAlign: 'center', marginTop: 20 }}>
           Nenhum colaborador encontrado.
         </Text>
       )}
@@ -57,7 +59,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#1A2833',
   },
 });
 
