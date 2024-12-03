@@ -15,12 +15,12 @@ function showToast(text) {
 const ServiceScreen = ({ route, navigation }) => {
     const { theme } = useTheme(); // Obtém o tema atual
     const service = route.params?.service || {};
-    console.log(service)
+
     const [name, setName] = useState(service.name || '');
     const [description, setDescription] = useState(service.description || '');
     const [isFavorite, setIsFavorite] = useState(service.favorite === 1);
 
-    console.log(isFavorite)
+
 
     const [msgError, setMsgError] = useState({
         nameError: '',
@@ -47,9 +47,9 @@ const ServiceScreen = ({ route, navigation }) => {
 
     const handleFavorite = () => {
         setIsFavorite(prev => {
-            console.log("isFavorite antes: ", prev);
+         
             const newValue = !prev;
-            console.log("isFavorite depois: ", newValue);
+
             return newValue;
         });
     };

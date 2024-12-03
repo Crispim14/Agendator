@@ -31,6 +31,36 @@ const openDatabase = async () => {
 // };
 
 // Função para criar a tabela se não existir
+
+
+//criar funcao de drop  ou delete aqui
+// DELETE FROM schedules;
+
+// DELETE FROM  services;
+
+// DELETE FROM  servicesProvider;
+
+// DELETE FROM relatesServicesProvider;
+
+// DELETE FROM relatesServiceSchedule;
+
+
+// DROP TABLE IF  EXISTS schedules;
+
+
+// DROP TABLE IF  EXISTS services;
+
+// DROP TABLE IF  EXISTS servicesProvider;
+
+// DROP TABLE IF  EXISTS relatesServicesProvider;
+
+// DROP TABLE IF  EXISTS relatesServiceSchedule;
+
+
+
+
+
+
 export const createTable = async () => {
   try {
     const db = await openDatabase();
@@ -46,13 +76,12 @@ export const createTable = async () => {
               time TEXT NOT NULL
           );
             
-
           CREATE TABLE IF NOT EXISTS services (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               name TEXT NOT NULL,
               description TEXT NOT NULL,
               favorite BLOB NOT NULL,
-              ramo INTEGER NOT NULL
+              ramo INTEGER DEFAULT 0
           );
             
             
@@ -90,11 +119,77 @@ export const addService = async (service) => {
     const db = await openDatabase();
     const result = await db.runAsync(
       "INSERT INTO services (name, description,favorite) VALUES (?, ?, ?)",
-      [service.name, service.description,service.favorite]
+      [service.name, service.description,service.favorite,]
     );
    
+    
     return result;
   } catch (error) {
+
+    throw error;
+  }
+};
+
+
+
+export const addRamoAtividade = async (ramo) => {
+  try {
+    const db = await openDatabase();
+
+    let  query = `` ;
+
+if(ramo==1){
+  query = `
+  -- babearia
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Corte de cabelo masculino', 'Corte de cabelo estilo clássico ou moderno, conforme preferência do cliente.', 0, 1);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Barba e bigode', 'Retoque de barba e bigode, com acabamento preciso e hidratação para a pele.', 0, 1);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Combo Corte + Barba', 'Corte de cabelo e barba no mesmo atendimento, com desconto exclusivo.', 0, 1);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Tratamento capilar', 'Hidratação e fortalecimento do cabelo masculino.', 0, 1);
+`
+}else if(ramo==3){
+  query = ` 
+  INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Delivery', 'Serviço de entrega de refeições no local escolhido pelo cliente.', 0, 3);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Menu vegetariano', 'Opções de pratos 100% vegetarianos, preparados com ingredientes frescos.', 0, 3);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Menu executivo', 'Opções de pratos rápidos e balanceados, ideais para o horário de almoço.', 0, 3);
+	
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Comida para eventos', 'Serviço de catering para eventos como festas e reuniões corporativas.', 0, 3);
+  `
+}else if(ramo==4){
+query= ` 
+--Mecânico
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Troca de óleo', 'Troca de óleo e filtro, garantindo o bom funcionamento do motor do veículo.', 0, 4);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Alinhamento e balanceamento', 'Serviço para garantir que os pneus estejam corretamente alinhados e equilibrados.', 0, 4);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Revisão de suspensão', 'Verificação e manutenção da suspensão do veículo para evitar problemas de direção.', 0, 4);
+
+INSERT INTO services (name, description, favorite, ramo) 
+VALUES ('Diagnóstico eletrônico', 'Verificação dos sistemas eletrônicos do carro através de equipamentos especializados.', 0, 4);
+`
+}
+
+    const result = await db.runAsync(query);
+   
+    
+    return result;
+  } catch (error) {
+
     throw error;
   }
 };
@@ -131,7 +226,8 @@ export const addRelatesServicesProvider = async (relatesServicesProvider) => {
         relatesServicesProvider.affinity,
       ]
     );
-
+    console.log('insert')
+console.log(relatesServicesProvider)
     return result;
   } catch (error) {
     throw error;
@@ -140,8 +236,7 @@ export const addRelatesServicesProvider = async (relatesServicesProvider) => {
 
 
 export const addRelatesSchedulesServices = async (relatesServicesProvider) => {
-  console.log('aqui')
-  console.log(relatesServicesProvider)
+
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
@@ -154,6 +249,25 @@ export const addRelatesSchedulesServices = async (relatesServicesProvider) => {
       ]
     );
 
+    console.log("relacionando servico")
+    console.log(relatesServicesProvider)
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+export const sla = async () => {
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      "SELECT * FROM  relatesServiceSchedule"
+
+    );
+  
     return result;
   } catch (error) {
     throw error;
@@ -195,7 +309,7 @@ export const getLastServicesProvider = async () => {
     const result = await db.getFirstAsync(
       "SELECT * FROM servicesProvider ORDER BY id DESC"
     );
-
+  
     return result;
   } catch (error) {
     throw error;
@@ -217,6 +331,38 @@ export const getSchedules = async (date) => {
   }
 };
 
+
+export const getDataSchedules = async (date) => {
+  try {
+
+    createTable(); // Presumo que essa função cria as tabelas, se necessário
+    const db = await openDatabase(); // Abre o banco de dados (presumo que openDatabase seja uma função que você tem)
+
+    // Consulta SQL com junção das tabelas corretamente formatada
+    const result = await db.getAllAsync(
+      `
+      SELECT  schedules.id , schedules.name, schedules.date, schedules.time, services.description
+      FROM schedules
+      INNER JOIN relatesServiceSchedule
+        ON relatesServiceSchedule.idSchedules = schedules.id
+      INNER JOIN services
+      ON relatesServiceSchedule.idService = services.id
+      WHERE schedules.date = ? 
+      ORDER BY schedules.time ASC 
+      `,
+      [date] // O valor da data será passado aqui para o marcador "?"
+    );
+
+
+
+    return result;
+  } catch (error) {
+
+    throw error; // Relança o erro, caso precise ser tratado em outro lugar
+  }
+};
+
+
 export const getServices = async () => {
   try {
     createTable(); // Cria a tabela se não existir
@@ -225,9 +371,11 @@ export const getServices = async () => {
       "SELECT * FROM services ORDER BY favorite DESC, name ASC"
     );
 
+
     return result;
   } catch (error) {
     throw error;
+  
   }
 };
 
@@ -343,7 +491,7 @@ export const updateSchedule = async (schedule) => {
 
 export const updateService = async (service) => {
   try {
-    console.log(service)
+
     const db = await openDatabase();
     const result = await db.runAsync(
       "UPDATE services SET name = ?, description = ?, favorite = ? WHERE id = ?",
@@ -394,16 +542,142 @@ export const deleteServiceProvider = async (serviceProvider) => {
       "DELETE FROM servicesProvider WHERE id = ?",
       [serviceProvider.id]
     );
-    console.log(serviceProvider.id)
-console.log('deu bom')
+
     return result;
   } catch (error) {
 
-    console.log('deu ruim')
-    console.log(error)
+   
+    throw error;
+  }
+};
+
+//relatorios
+
+export const getsAllShedules = async () => {
+  try {
+
+
+
+    
+    createTable(); // Presumo que essa função cria as tabelas, se necessário
+    const db = await openDatabase(); // Abre o banco de dados (presumo que openDatabase seja uma função que você tem)
+
+    // Consulta SQL com junção das tabelas corretamente formatada
+    const result = await db.getAllAsync(
+      `
+      SELECT   name, phone
+      FROM schedules ORDER BY name ASC 
+      ` // O valor da data será passado aqui para o marcador "?"
+    );
+
+
+
+    return result;
+  } catch (error) {
+
+    throw error; // Relança o erro, caso precise ser tratado em outro lugar
+  }
+};
+
+
+
+
+export const getSchedulesMonth = async (date,name) => {
+  const ano = date.getFullYear();  // Obtém o ano
+  const mes = (date.getMonth() + 1).toString().padStart(2, '0');  
+
+
+  const dataFormatada = `${ano}-${mes}`;
+
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      `SELECT  name, phone FROM schedules
+      WHERE strftime('%Y-%m', date) = ?
+      AND   (  name like ? OR ? = '' ) 
+      ORDER BY name ASC`,
+      [dataFormatada,`%${name}%`,`%${name}%`]
+    );
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const getSchedules1= async (periodo,name) => {
+
+
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      `SELECT  name, phone  FROM schedules
+      WHERE  strftime('%Y-%m-%d',date) = strftime('%Y-%m-%d',DATE(CURRENT_TIMESTAMP, '-${periodo} days'))  
+      AND  (  name like ? OR ? = '' )  
+      ORDER BY name ASC`,
+      [`%${name}%`,`%${name}%`]
+     
+    );
+
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const getSchedulesYear= async (data,name) => {
+
+
+ // const formattedDate = data.split('T')[0]
+ const formattedDate  = data.toISOString().split('T')[0]
+ 
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      `SELECT  name, phone  FROM schedules
+      WHERE  strftime('%Y',date) = strftime('%Y',?)  
+      AND  (  name like ? OR ? = '' )  
+      ORDER BY name ASC`,
+      [formattedDate,`%${name}%`,`%${name}%`]
+     
+    );
+
+    return result;
+  } catch (error) {
     throw error;
   }
 };
 
 
 
+
+export const getSchedulesRange= async (data,data2,name) => {
+
+
+  // const formattedDate = data.split('T')[0]
+  const formattedDate1  = data.toISOString().split('T')[0]
+  const formattedDate2  = data2.toISOString().split('T')[0]
+  
+   try {
+     createTable();
+     const db = await openDatabase();
+     const result = await db.getAllAsync(
+       `SELECT  name, phone  FROM schedules
+       WHERE   date BETWEEN ? AND ?
+       AND  (  name like ? OR name = '' )  
+       ORDER BY name ASC`,
+       [formattedDate1,formattedDate2, `%${name}%`]
+      
+     );
+ 
+     return result;
+   } catch (error) {
+     throw error;
+   }
+ };

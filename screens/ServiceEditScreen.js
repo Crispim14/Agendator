@@ -98,7 +98,7 @@ const ServiceEditScreen = ({ route, navigation }) => {
     const proceedSave = async (newService) => {
         try {
             if (service.id) {
-                // Editar
+
                 await updateService({ ...newService, id: service.id });
                 showToast('Serviço atualizado com sucesso');
             } else {

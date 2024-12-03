@@ -11,7 +11,7 @@ export default function BtnPadraoMenor({ children,propOnPress, bgColor="#0CABA8"
         backgroundColor: bgColor,
         borderRadius: 50,
         marginHorizontal: 50,
-        marginVertical: 5,
+        marginVertical: 5, 
       };
 
     return (

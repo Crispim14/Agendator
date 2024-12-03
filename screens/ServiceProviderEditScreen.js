@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, TextInput, Alert, ToastAndroid, ScrollView } from "react-native";
+import { Text, TextInput, Alert, ToastAndroid, ScrollView , View, TouchableOpacity} from "react-native";
 import {
   updateServiceProvider,
   addServicesProvider,
@@ -12,6 +12,7 @@ import Txt from "../components/Txt";
 import BtnPadraoMenor from "../components/BtnPadraoMenor";
 import ServiceProviderPicker from './ServiceProviderPicker';
 import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
+import CheckboxPadrao from "../components/CheckboxPadrao";
 
 function showToast(text) {
   ToastAndroid.show(text, ToastAndroid.SHORT);
@@ -23,13 +24,29 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
   const [name, setName] = useState(serviceProvider.name || "");
   const [pickers, setPickers] = useState([{ serviceId: '', affinity: 1 }]);
   const [relatedServices, setRelatedServices] = useState([]);
+  const [services, setServices] = useState([]);
+  const [selectedServicos, setSelectedServicos] = useState({});
+
   const [allServices, setAllServices] = useState([]);
   const [msgError, setMsgError] = useState({ nameError: '' });
+
+
+
+
+
+
+  const handleCheckboxChange = (id) => {
+    setSelectedServicos(prevState => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));  
+  };
 
   useEffect(() => {
     if (serviceProvider.id) {
       setName(serviceProvider.name);
       loadRelatedServices(serviceProvider.id);
+      
     }
     fetchAllServices();
   }, [serviceProvider]);
@@ -38,6 +55,7 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
     try {
       const result = await getServices();
       setAllServices(result);
+      
     } catch (error) {
       console.error("Erro ao buscar serviços:", error);
     }
@@ -102,14 +120,17 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
 
   const saveRelatedServices = async (providerId) => {
     try {
-      await Promise.all(pickers.map(async (picker) => {
-        const relates = {
-          idProvider: providerId,
-          idService: picker.serviceId,
-          affinity: picker.affinity,
-        };
-        await addRelatesServicesProvider(relates);
-      }));
+      for (const idServico of Object.keys(selectedServicos)) {
+        if (selectedServicos[idServico]) {
+          const relates = {
+            idProvider: providerId,
+            idService: idServico,
+            affinity: 1,
+          };
+  
+          await addRelatesServicesProvider(relates);
+        }
+      }
     } catch (error) {
       console.error("Erro ao salvar serviços relacionados:", error);
       showToast("Erro ao salvar serviços relacionados.");
@@ -165,18 +186,22 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
         style={{ borderBottomWidth: 1, marginBottom: 16, color: theme.text }}
       />
 
-      {pickers.map((picker, index) => (
-        <ServiceProviderPicker
-          key={index}
-          index={index}
-          onRemove={() => removePicker(index)}
-          services={allServices}
-          affinities={[1, 2, 3, 4, 5]}
-          onValuesChange={handleValuesChange}
-          initialServiceId={picker.serviceId}
-          initialAffinity={picker.affinity}
-        />
-      ))}
+
+<ScrollView >
+{allServices.map((servico) => (
+  <View key={servico.id} style={{ flexDirection: 'row', marginBottom: 8 , }}>
+    <CheckboxPadrao
+      statusCheck={!!selectedServicos[servico.id] ? 'checked' : 'unchecked'}
+      propOnPress={ () =>  handleCheckboxChange(servico.id)}
+      txt={servico.name}
+    />
+    
+  </View>
+))}
+  </ScrollView>
+
+
+
       <BtnPadraoMenor propOnPress={addPicker}>Adicionar Serviço</BtnPadraoMenor>
       <BtnPadraoMenor propOnPress={clearFormData}>Limpar Campos</BtnPadraoMenor>
       <BtnPadraoMenor propOnPress={saveServiceProvider}>Salvar</BtnPadraoMenor>
@@ -190,3 +215,4 @@ const ServiceProviderEditScreen = ({ route, navigation }) => {
 };
 
 export default ServiceProviderEditScreen;
+

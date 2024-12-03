@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid, ScrollView ,Share} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices, addRelatesSchedulesServices } from '../database/scheduleDB';
+import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices, getServicesProvider, addRelatesSchedulesServices } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadrao from '../components/BtnPadrao';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
 import ServicePicker from './ServicePicker';
 import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
+import CheckboxPadrao from "../components/CheckboxPadrao";
 
 function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
@@ -21,7 +22,14 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [time, setTime] = useState(schedule.time || '');
     const [professional, setProfessional] = useState(schedule.professional || '');
     const [services, setServices] = useState([]);
+    const [servicesProvider, setServicesProvider] = useState([]);
     const [pickers, setPickers] = useState([{ serviceId: '', providerId: '', affinity: 1 }]);
+    const [selectedServicos, setSelectedServicos] = useState({});
+    const [selectedColaboradores, setSelectedColaboradores] = useState({});
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [idServicos, setIdServicos] = useState([]);
+
     const [msgError, setMsgError] = useState({
         nameError: '',
         phoneError: '',
@@ -31,20 +39,42 @@ const AddScheduleScreen = ({ route, navigation }) => {
         professionalError: '',
     });
 
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showTimePicker, setShowTimePicker] = useState(false);
 
     useEffect(() => {
         const fetchServices = async () => {
             try {
                 const result = await getServices();
                 setServices(result);
+                const result2 = await getServicesProvider();
+                setServicesProvider(result2)
             } catch (error) {
                 console.error("Erro ao buscar serviços:", error);
             }
         };
         fetchServices();
     }, []);
+
+
+
+
+    const handleCheckboxChange = (id) => {
+        setSelectedServicos(prevState => ({
+            ...prevState,
+            [id]: !prevState[id],
+        }));
+    };
+
+
+
+
+    const handleCheckboxChangeColaboradores = (id) => {
+        setSelectedColaboradores(prevState => ({
+            ...prevState,
+            [id]: !prevState[id],
+        }));
+    };
+
+
 
     const handleValuesChange = (index, serviceId, providerId, affinity) => {
         const newPickers = [...pickers];
@@ -80,14 +110,14 @@ const AddScheduleScreen = ({ route, navigation }) => {
                 nameError: 'Digite um nome para o usuário'
             }));
             error = true;
-        } 
+        }
         if (!phone.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
                 phoneError: 'Digite um número de telefone'
             }));
             error = true;
-        } 
+        }
         if (!time.trim()) {
             setMsgError(prevState => ({
                 ...prevState,
@@ -102,7 +132,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const saveSchedule = async () => {
         try {
             if (checkErrors() === true) {
-                console.log("Erros encontrados, salvamento cancelado.");
+
                 return;
             }
             const selectedDateTime = new Date(date);
@@ -144,6 +174,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
                 scheduleID = result.lastInsertRowId;
             }
 
+
             saveRelatedServices(scheduleID);
             navigation.navigate('Home', { refresh: true });
         } catch (error) {
@@ -154,14 +185,32 @@ const AddScheduleScreen = ({ route, navigation }) => {
 
     const saveRelatedServices = async (scheduleID) => {
         try {
-            await Promise.all(pickers.map(async (picker) => {
-                const relates = {
-                    idSchedules: scheduleID,
-                    idService: picker.serviceId,
-                    idProvider: picker.providerId,
-                };
-                await addRelatesSchedulesServices(relates);
+
+
+
+            const ids = Object.keys(selectedServicos);
+
+            const idsColaboradores = Object.keys(selectedColaboradores);
+
+
+            setIdServicos(ids)
+
+
+
+
+            await Promise.all(idServicos.map(async (id) => {
+                // Dentro do primeiro map
+                await Promise.all(idsColaboradores.map(async (id2) => {
+                    const relates = {
+                        idSchedules: scheduleID,
+                        idService: id,
+                        idProvider: id2,
+                    };
+
+                    await addRelatesSchedulesServices(relates); // Aguardando a execução da função assíncrona
+                }));
             }));
+
         } catch (error) {
             console.error("Erro ao salvar serviços relacionados:", error);
             showToast("Erro ao salvar serviços relacionados.");
@@ -178,6 +227,40 @@ const AddScheduleScreen = ({ route, navigation }) => {
             ],
             { cancelable: true }
         );
+    };
+
+
+    
+    const shareSchedule =   async () => {
+        
+        let msg = `Olá ${name}. Você possui agendado
+                    o serviço Formatação de
+                    Computador Windows às ${time} do
+                    dia ${date} conosco.`
+
+                
+
+
+
+                    try {
+                        const result = await Share.share({
+                          message:
+                          msg,
+                        });
+                        if (result.action === Share.sharedAction) {
+                          if (result.activityType) {
+                            // shared with activity type of result.activityType
+                          } else {
+                            // shared
+                          }
+                        } else if (result.action === Share.dismissedAction) {
+                          // dismissed
+                        }
+                      } catch (error) {
+                        Alert.alert(error.message);
+                      }
+
+                    
     };
 
     const onChangeDate = (event, selectedDate) => {
@@ -230,20 +313,54 @@ const AddScheduleScreen = ({ route, navigation }) => {
             )}
             <Txt text={time} />
 
-            {pickers.map((picker, index) => (
-                <ServicePicker
-                    key={index}
-                    index={index}
-                    onRemove={() => removePicker(index)}
-                    services={services}
-                    affinities={[1, 2, 3, 4, 5]}
-                    onValuesChange={handleValuesChange}
-                />
-            ))}
+            <Txt text={"Selecione os serviços para o agendamento:"} />
+            <ScrollView>
+                {services.map((servico) => (
+                    <ScrollView key={servico.id}>
+
+                        <CheckboxPadrao
+                            statusCheck={!!selectedServicos[servico.id] ? 'checked' : 'unchecked'}
+                            propOnPress={() => handleCheckboxChange(servico.id)}
+                            txt={servico.name}
+                        />
+
+
+                    </ScrollView>
+                ))}
+            </ScrollView>
+
+
+
+            <Txt text={"Selecione os colaboradores para o serviço:"} />
+            <ScrollView>
+                {servicesProvider.map((colaborador) => (
+                    <ScrollView key={colaborador.id} >
+                        <CheckboxPadrao
+                            statusCheck={!!selectedColaboradores[colaborador.id] ? 'checked' : 'unchecked'}
+                            propOnPress={() => handleCheckboxChangeColaboradores(colaborador.id)}
+                            txt={colaborador.name}
+                        />
+
+                    </ScrollView>
+                ))}
+            </ScrollView>
+
+
+
             <BtnPadraoMenor propOnPress={addPicker}>Adicionar Serviço</BtnPadraoMenor>
 
             <BtnPadraoMenor propOnPress={saveSchedule}>Salvar</BtnPadraoMenor>
-            {schedule.id && <BtnPadraoMenor propOnPress={confirmDeleteSchedule} bgColor="red">Excluir</BtnPadraoMenor>}
+            {schedule.id &&
+
+                <View>
+
+                    <BtnPadraoMenor propOnPress={confirmDeleteSchedule} bgColor="red">Excluir</BtnPadraoMenor>
+                    <BtnPadraoMenor propOnPress={shareSchedule} bgColor="red">Compartilhar</BtnPadraoMenor>
+
+                </View>
+
+
+            }
         </ScrollView>
     );
 };

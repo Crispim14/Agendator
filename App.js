@@ -12,6 +12,7 @@ import ServiceListScreen from './screens/ServiceListScreen';
 import ServiceProviderListScreen from './screens/ServiceProviderListScreen';
 import ServiceProviderEditScreen from './screens/ServiceProviderEditScreen';
 import { useFonts } from 'expo-font';
+import Reports from './screens/Reports';
 
 const Drawer = createDrawerNavigator();
 
@@ -78,6 +79,8 @@ export default function App() {
                     />
                     <Drawer.Screen name="ServiceList" component={ServiceListScreen} options={{ title: 'Lista de Serviços' }} />
                     <Drawer.Screen name="ServiceProviderList" component={ServiceProviderListScreen} options={{ title: 'Lista de Prestadores de Serviços' }} />
+
+                    <Drawer.Screen name="Reports" component={Reports} options={{ title: 'Relatórios' }} />
                 </Drawer.Navigator>
             </NavigationContainer>
         </ThemeProvider>
