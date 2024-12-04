@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { getSchedulesMonth,getSchedules1,getSchedulesYear, getSchedulesRange } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadrao from '../components/BtnPadrao';
-import BtnPadraoMenor from '../components/BtnPadraoMenor';
+import BtnPadraoMenor2 from '../components/BtnPadraoMenor2';
 import ServicePicker from './ServicePicker';
 import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
 import CheckboxPadrao from "../components/CheckboxPadrao";
@@ -45,16 +45,14 @@ const ReportsScreen = ({ route, navigation }) => {
         setShowDataRangePicker1(false);
         if (selectedDate) setDataRange1(selectedDate);
 
-        console.log(`setYear`)
-        console.log(year)
+      
     };
 
     const onChangeDataRange2 = (event, selectedDate) => {
         setShowDataRangePicker2(false);
         if (selectedDate) setDataRange2(selectedDate);
 
-        console.log(`setYear`)
-        console.log(year)
+      
     };
 
     
@@ -64,27 +62,27 @@ const ReportsScreen = ({ route, navigation }) => {
   
     const MesEAno   = async() =>{
 
-        let novosDados = await getSchedulesMonth(date,name) ;
-
-        console.log(novosDados)
+        const novosDados = await getSchedulesMonth(date,name) ;
+        setDados(novosDados)
+        
+      
 
     }
 
     const FiltarPorDias   = async() =>{
 
-        console.log(name)
-        let novosDados = await getSchedules1(dias,name) ;
-
-        console.log(novosDados)
+     
+        const novosDados = await getSchedules1(dias,name) ;
+        setDados(novosDados)
+   
 
     }
 
     const FiltarPorAno   = async() =>{
 
-        console.log(name)
-        let novosDados = await getSchedulesYear(year,name) ;
-
-        console.log(novosDados)
+     
+        const novosDados = await getSchedulesYear(year,name) ;
+        setDados(novosDados)
 
     }
 
@@ -92,9 +90,9 @@ const ReportsScreen = ({ route, navigation }) => {
     const FiltarRange   = async() =>{
 
         
-        let novosDados = await getSchedulesRange(dataRange1, dataRange2,name) ;
-
-        console.log(novosDados)
+        const novosDados = await getSchedulesRange(dataRange1, dataRange2,name) ;
+        setDados(novosDados)
+       
 
     }
 
@@ -103,11 +101,11 @@ const ReportsScreen = ({ route, navigation }) => {
     return (
         <ScrollView style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
 
-
+<Txt text={'Digite o nome do cliente que deseja filtrar'} />
 <TextInput value={name} onChangeText={setName} style={{ borderBottomWidth: 1, marginBottom: 16, color: theme.text }} />
 
             <Txt text={'Data:'} />
-            <BtnPadraoMenor propOnPress={() => setShowDatePicker(true)}>Selecionar Data</BtnPadraoMenor>
+            <BtnPadraoMenor2 propOnPress={() => setShowDatePicker(true)}>Selecionar Data</BtnPadraoMenor2>
 
             {showDatePicker && (
                 <DateTimePicker
@@ -118,13 +116,13 @@ const ReportsScreen = ({ route, navigation }) => {
                 />
             )}
 
-<BtnPadraoMenor propOnPress={MesEAno}>Filtrar por ano e mes</BtnPadraoMenor>
+<BtnPadraoMenor2 propOnPress={MesEAno}>Filtrar por ano e mes</BtnPadraoMenor2>
 
 
-<BtnPadraoMenor propOnPress={FiltarPorDias}>Por dias</BtnPadraoMenor>
+<BtnPadraoMenor2 propOnPress={FiltarPorDias}>Por dias</BtnPadraoMenor2>
 
 
-<BtnPadraoMenor propOnPress={FiltarPorAno}>Filtrar pelo ano</BtnPadraoMenor>
+<BtnPadraoMenor2 propOnPress={FiltarPorAno}>Filtrar pelo ano</BtnPadraoMenor2>
 
     
 {showDatePickerYear && (
@@ -137,7 +135,7 @@ const ReportsScreen = ({ route, navigation }) => {
         />
       )}
 
-<BtnPadraoMenor propOnPress={() => setShowDatePickerYear(true)}>Selecionar o ano </BtnPadraoMenor>
+<BtnPadraoMenor2 propOnPress={() => setShowDatePickerYear(true)}>Selecionar o ano </BtnPadraoMenor2>
 
             <Txt text={year.toLocaleDateString('pt-BR')} />
 
@@ -160,7 +158,7 @@ const ReportsScreen = ({ route, navigation }) => {
                 />
             )}
 
-<BtnPadraoMenor propOnPress={() => setShowDataRangePicker1(true)}>Selecionar Data range1</BtnPadraoMenor>
+<BtnPadraoMenor2 propOnPress={() => setShowDataRangePicker1(true)}>Selecionar Data range1</BtnPadraoMenor2>
 
             
 {showDataRangePicker2 && (
@@ -173,10 +171,37 @@ const ReportsScreen = ({ route, navigation }) => {
             )}
 
 
-<BtnPadraoMenor propOnPress={() => setShowDataRangePicker2(true)}>Selecionar Data range2</BtnPadraoMenor>
+<BtnPadraoMenor2 propOnPress={() => setShowDataRangePicker2(true)}>Selecionar Data range2</BtnPadraoMenor2>
 
 
-<BtnPadraoMenor propOnPress={FiltarRange}>Filtrar por Range</BtnPadraoMenor>
+<BtnPadraoMenor2 propOnPress={FiltarRange}>Filtrar por Range</BtnPadraoMenor2>
+
+  {/* Exibindo os dados na tela */}
+  <View style={{ marginTop: 16 }}>
+                {dados && dados.length > 0 ? (
+                    dados.map((item, index) => (
+                        <View key={index} style={{ marginBottom: 10 }}>
+
+<Text style={{ color: theme.text }}>
+                          Dados do cliente
+                              
+                            </Text>
+                            <Text style={{ color: theme.text }}>
+                              Nome {item.name }
+                              
+                            </Text>
+                            <Text style={{ color: theme.text }}>
+                               Telefone {item.phone }
+                               
+                            </Text>
+                           
+
+                        </View>
+                    ))
+                ) : (
+                    <Text style={{ color: theme.text }}>Nenhum dado encontrado</Text>
+                )}
+            </View>
         </ScrollView>
     );
 };

@@ -5,10 +5,10 @@ import Txt from '../components/Txt';
 import BtnItemList from '../components/BtnItemList';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
 import BtnPadrao from '../components/BtnPadrao';
-import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
+import { useTheme } from '../ThemeContext'; 
 
 const ServiceListScreen = ({ navigation }) => {
-    const { theme } = useTheme(); // Obtém o tema atual
+    const { theme } = useTheme(); 
     const [services, setServices] = useState([]);
 
     useEffect(() => {
@@ -23,9 +23,9 @@ const ServiceListScreen = ({ navigation }) => {
 
         fetchServices();
 
-        const unsubscribe = navigation.addListener('focus', fetchServices); // Atualiza ao focar na tela
+        const unsubscribe = navigation.addListener('focus', fetchServices); 
 
-        return unsubscribe; // Remove o listener quando o componente é desmontado
+        return unsubscribe; 
     }, [navigation]);
 
     const renderServiceItem = ({ item }) => (

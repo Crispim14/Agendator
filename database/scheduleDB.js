@@ -124,7 +124,12 @@ export const createTable = async () => {
          
           );
 
+CREATE TABLE  IF NOT EXISTS settings( 
+first_access BIT, 
+theme TEXT,
+standard_message TEXT
 
+ ); 
         `);
   } catch (error) {
     throw error;
@@ -258,11 +263,33 @@ export const addRelatesSchedulesServices = async (relatesServicesProvider) => {
     const db = await openDatabase();
     const result = await db.runAsync(
   
-      "INSERT INTO relatesServiceSchedule (idSchedules,idService,idProvider) VALUES (?,?,?)",
+      ` INSERT INTO relatesServiceSchedule (idSchedules,idService,idProvider) VALUES (?,?,?)` ,
       [
         relatesServicesProvider.idSchedules,
         relatesServicesProvider.idService,
         relatesServicesProvider.idProvider,
+      ]
+    );
+
+    console.log("relacionando servico")
+    console.log(relatesServicesProvider)
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+export const deleteRelatesSchedulesServices = async (relatesServicesProvider) => {
+
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+  
+      ` DELETE FROM relatesServiceSchedule WHERE idSchedules = ? ` ,
+      [
+        relatesServicesProvider.idSchedules
       ]
     );
 
@@ -349,6 +376,7 @@ export const getSchedules = async (date) => {
 };
 
 
+
 export const getDataSchedules = async (date) => {
   try {
 
@@ -358,7 +386,7 @@ export const getDataSchedules = async (date) => {
     // Consulta SQL com junção das tabelas corretamente formatada
     const result = await db.getAllAsync(
       `
-      SELECT  schedules.id , schedules.name, schedules.date, schedules.time, services.description
+      SELECT  schedules.id , schedules.name, schedules.date, schedules.time,schedules.phone, services.description
       FROM schedules
       INNER JOIN relatesServiceSchedule
         ON relatesServiceSchedule.idSchedules = schedules.id
@@ -488,14 +516,11 @@ export const updateSchedule = async (schedule) => {
   try {
     const db = await openDatabase();
     const result = await db.runAsync(
-      "UPDATE schedules SET name = ?, phone = ?, date = ?, time = ?, service = ?, professional = ? WHERE id = ?",
+      "UPDATE schedules SET name = ?, phone = ?, date = ?, time = ?  WHERE id = ?",
       [
         schedule.name,
         schedule.phone,
         schedule.date,
-        schedule.time,
-        schedule.service,
-        schedule.professional,
         schedule.id,
       ]
     );
@@ -693,8 +718,98 @@ export const getSchedulesRange= async (data,data2,name) => {
       
      );
  
-     return result;
+     return result; 
    } catch (error) {
      throw error;
    }
  };
+
+
+ export const getAllSchedules = async (date,name) => {
+  const formattedDate  = data.toISOString().split('T')[0]
+
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getAllAsync(
+      `SELECT * FROM schedules WHERE date = ?  AND  (  name like ? OR name = '' )  
+       ORDER BY name ASC`,
+      [ formattedDate,`%${name}%`]
+    );
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+ export const getAcess = async () => {
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getFirstAsync(
+      "SELECT * FROM settings WHERE first_access = 1"
+    );
+  
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addFirstAccess = async () => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `INSERT INTO  settings (first_access , standard_message) 
+      VALUES  (1, 'Olá [nome do cliente], você possui agendado o serviço [serviço agendado] às [hora do serviço] do dia [data do agendamento] na [empresa]'); `
+    );
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteFirstAccess = async () => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      `DELETE FROM settings; `
+    );
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getMessage = async () => {
+  try {
+    createTable();
+    const db = await openDatabase();
+    const result = await db.getFirstAsync(
+      "SELECT * FROM settings WHERE first_access = 1"
+    );
+  
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const updateSettings = async (settings) => {
+  try {
+    const db = await openDatabase();
+    const result = await db.runAsync(
+      "UPDATE settings SET standard_message = ? WHERE first_access = 1",
+      [
+        settings.standard_message
+      ]
+    );
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};

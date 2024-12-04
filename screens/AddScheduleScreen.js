@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, Platform, ToastAndroid, ScrollView ,Share} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices, getServicesProvider, addRelatesSchedulesServices } from '../database/scheduleDB';
+import { addSchedule, updateSchedule, deleteSchedule, getSchedules, getServices, getServicesProvider, addRelatesSchedulesServices, getMessage, deleteRelatesSchedulesServices } from '../database/scheduleDB';
 import Txt from '../components/Txt';
 import BtnPadrao from '../components/BtnPadrao';
 import BtnPadraoMenor from '../components/BtnPadraoMenor';
@@ -38,7 +38,6 @@ const AddScheduleScreen = ({ route, navigation }) => {
         serviceError: '',
         professionalError: '',
     });
-
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -167,13 +166,20 @@ const AddScheduleScreen = ({ route, navigation }) => {
         try {
             let scheduleID;
             if (schedule.id) {
+
+
+             
                 await updateSchedule({ ...newSchedule, id: schedule.id });
+                scheduleID = schedule.id;
                 showToast('Cadastro atualizado com sucesso');
             } else {
+
+                
                 const result = await addSchedule(newSchedule);
                 scheduleID = result.lastInsertRowId;
-            }
 
+        
+            }
 
             saveRelatedServices(scheduleID);
             navigation.navigate('Home', { refresh: true });
@@ -187,27 +193,26 @@ const AddScheduleScreen = ({ route, navigation }) => {
         try {
 
 
-
+           
             const ids = Object.keys(selectedServicos);
 
+
             const idsColaboradores = Object.keys(selectedColaboradores);
-
-
+    
             setIdServicos(ids)
+            
 
-
-
-
-            await Promise.all(idServicos.map(async (id) => {
-                // Dentro do primeiro map
+            await Promise.all(ids.map(async (id) => {
+               
                 await Promise.all(idsColaboradores.map(async (id2) => {
                     const relates = {
                         idSchedules: scheduleID,
                         idService: id,
                         idProvider: id2,
                     };
-
-                    await addRelatesSchedulesServices(relates); // Aguardando a execução da função assíncrona
+                    await deleteRelatesSchedulesServices(relates);
+                 
+                    await addRelatesSchedulesServices(relates); 
                 }));
             }));
 
@@ -233,19 +238,22 @@ const AddScheduleScreen = ({ route, navigation }) => {
     
     const shareSchedule =   async () => {
         
-        let msg = `Olá ${name}. Você possui agendado
-                    o serviço Formatação de
-                    Computador Windows às ${time} do
-                    dia ${date} conosco.`
 
-                
+    const msg = await getMessage() ;
 
 
+
+        let msg1  = " Olá [nome do cliente], você possui agendado o serviço [serviço agendado] às [hora do serviço] do dia [data do agendamento] na [empresa] "
+        msg1 =  msg1.replace(`[nome do cliente]`, name);
+        msg1 = msg1.replace("[hora do serviço]", time);
+        msg1 = msg1.replace(`[data do agendamento]`, date.toLocaleDateString('pt-BR'));
+
+            
 
                     try {
                         const result = await Share.share({
                           message:
-                          msg,
+                          msg1,
                         });
                         if (result.action === Share.sharedAction) {
                           if (result.activityType) {
@@ -347,7 +355,6 @@ const AddScheduleScreen = ({ route, navigation }) => {
 
 
 
-            <BtnPadraoMenor propOnPress={addPicker}>Adicionar Serviço</BtnPadraoMenor>
 
             <BtnPadraoMenor propOnPress={saveSchedule}>Salvar</BtnPadraoMenor>
             {schedule.id &&
@@ -355,7 +362,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
                 <View>
 
                     <BtnPadraoMenor propOnPress={confirmDeleteSchedule} bgColor="red">Excluir</BtnPadraoMenor>
-                    <BtnPadraoMenor propOnPress={shareSchedule} bgColor="red">Compartilhar</BtnPadraoMenor>
+                    <BtnPadraoMenor propOnPress={shareSchedule} >Compartilhar</BtnPadraoMenor>
 
                 </View>
 

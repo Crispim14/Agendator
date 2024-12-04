@@ -1,7 +1,7 @@
 //import RNFS from 'react-native-fs'; // Import RNFS at the top
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Pressable, Button, Platform, StyleSheet,Alert  } from 'react-native';
-import { getSchedules, getServices, getDataSchedules,addRamoAtividade} from '../database/scheduleDB';
+import { getSchedules, getServices, getDataSchedules,addRamoAtividade, getAcess, addFirstAccess} from '../database/scheduleDB';
 import  createBackup from '../database/Backup';
 import * as DocumentPicker from 'expo-document-picker';
 import Txt from '../components/Txt';
@@ -35,8 +35,7 @@ const HomeScreen = ({ navigation }) => {
           });
 
           if (result.type === 'success') {
-            console.log('Arquivo selecionado:', result.uri);
-
+           
             const sourceUri = result.uri;
             const fileName = sourceUri.split('/').pop(); // Extrair o nome do arquivo
             const destinationUri = FileSystem.documentDirectory + fileName; // Caminho no documentDirectory
@@ -47,10 +46,10 @@ const HomeScreen = ({ navigation }) => {
               to: destinationUri,
             });
 
-      console.log(destinationUri)
-            console.log('Arquivo movido para o documentDirectory:', destinationUri);
+     
+            
           } else {
-            console.log('Nenhum arquivo selecionado.');
+         
           }
         } catch (error) {
           console.error('Erro ao mover o arquivo:', error);
@@ -66,8 +65,7 @@ const HomeScreen = ({ navigation }) => {
         //     type: '*/*',
         //   });
       
-        //   console.log(result)
-        //   console.log(result.assets[0].uri)
+       
       
         //   const sourceUri = (result.assets[0].uri);
         //   const fileName = result.assets[0].name; // Extrair o nome do arquivo
@@ -78,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
         //   // Copiar o arquivo selecionado para a pasta Downloads
         //   await RNFS.copyFile(sourceUri, destinationPath);
       
-        //   console.log('Arquivo copiado para a pasta Downloads:', destinationPath);
+      
         // } catch (error) {
         //   console.error('Erro ao copiar o arquivo:', error);
         // }
@@ -86,27 +84,25 @@ const HomeScreen = ({ navigation }) => {
 
 const copyFile = async (fileContent) => {
 
-  console.log(``)
-
 
 
   };
 
 
 
-    console.log('SEI LA PORRRA')
+    
     const handleGenerateBackup = async () => {
-        console.log(`macaco pelado123`)
+       
         try {
             console.log('try inicio')
             await createBackup();  // Garantir que a função seja aguardada
-            console.log('deu bom')
-            console.log("Backup gerado com sucesso");
+           
+           
         } catch (error) {
-            console.log('deu ruim')
+          
             console.error("Erro ao gerar o backup:", error);
         }
-        console.log('macaco pelado 2')
+    
     };
  
     const onChangeDate = (event, selectedDate) => {
@@ -115,6 +111,8 @@ const copyFile = async (fileContent) => {
             setDate(selectedDate);
             setSelectedDate(selectedDate.toISOString().split('T')[0]);
         }
+
+    
     };
 
     useEffect(() => {
@@ -127,10 +125,28 @@ const copyFile = async (fileContent) => {
             }
         };
 
-        
+        const verifyAcess = async () => {
+            try {
+                const acess = await getAcess();
+                 if(!acess || acess.length === 0){
+
+
+            await addFirstAccess(); 
+
+                 }else{
+                  
+
+                 }
+
+            } catch (error) {
+                console.error('Erro ao buscar agendamentos:', error);
+            }
+        };
+
 
       //  checkAuthentication();
         fetchSchedules();
+        verifyAcess();
 
         const unsubscribe = navigation.addListener('focus', fetchSchedules);
         return unsubscribe;
@@ -192,29 +208,11 @@ const copyFile = async (fileContent) => {
                 data={schedules}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => {
-                    console.log(item.id); // Logando para verificar o valor de item.id
+                   
                     return item.id ? item.id.toString() : index.toString();
                 }}
             />
 
-
-<BtnPadrao propOnPress={ funcaoteste}>
-                <Text style={[styles.btnText, { color: theme.text }]}>copiar</Text>
-            </BtnPadrao>
-
-<BtnPadrao propOnPress={pickDocument}>
-                <Text style={[styles.btnText, { color: theme.text }]}>teste</Text>
-            </BtnPadrao>
-
-            <BtnPadrao propOnPress={()=>addRamoAtividade(1)}>
-                <Text style={[styles.btnText, { color: theme.text }]}>Adicionar ramo</Text>
-            </BtnPadrao>
-
-
-
-            <BtnPadrao propOnPress={handleGenerateBackup}>
-                <Text style={[styles.btnText, { color: theme.text }]}>Backup</Text>
-            </BtnPadrao>
 
 
 
