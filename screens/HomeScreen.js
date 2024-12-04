@@ -1,6 +1,6 @@
 //import RNFS from 'react-native-fs'; // Import RNFS at the top
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Button, Platform, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, Button, Platform, StyleSheet,Alert  } from 'react-native';
 import { getSchedules, getServices, getDataSchedules,addRamoAtividade} from '../database/scheduleDB';
 import  createBackup from '../database/Backup';
 import * as DocumentPicker from 'expo-document-picker';
@@ -9,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import BtnPadrao from '../components/BtnPadrao';
 import SttsBar from '../components/SttsBar';
 import { useTheme } from '../ThemeContext';
+import * as LocalAuthentication from 'expo-local-authentication';
 //import * as FileSystem from 'expo-file-system';
 //import RNFS from 'react-native-fs'; // Importar o RNFS corretamente
 //import RNFS from 'react-native-fs';
@@ -22,6 +23,7 @@ const HomeScreen = ({ navigation }) => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 
 
@@ -91,6 +93,7 @@ const copyFile = async (fileContent) => {
   };
 
 
+
     console.log('SEI LA PORRRA')
     const handleGenerateBackup = async () => {
         console.log(`macaco pelado123`)
@@ -105,7 +108,7 @@ const copyFile = async (fileContent) => {
         }
         console.log('macaco pelado 2')
     };
-
+ 
     const onChangeDate = (event, selectedDate) => {
         setShowDatePicker(false);
         if (selectedDate) {
@@ -124,12 +127,32 @@ const copyFile = async (fileContent) => {
             }
         };
 
-        fetchSchedules();
- const testeArquivo = 'myData'
-        const unsubscribe = navigation.addListener('focus', fetchSchedules);
+        
 
+      //  checkAuthentication();
+        fetchSchedules();
+
+        const unsubscribe = navigation.addListener('focus', fetchSchedules);
         return unsubscribe;
     }, [navigation, selectedDate]);
+
+    const handleAuthentication = async () => {
+        try {
+            const authResult = await LocalAuthentication.authenticateAsync({
+                promptMessage: 'Autenticar',
+                fallbackLabel: 'Usar PIN',
+            });
+
+            if (authResult.success) {
+                setIsAuthenticated(true);
+            } else {
+                Alert.alert('Autenticação falhou', 'Tente novamente.');
+            }
+        } catch (error) {
+            console.error('Erro na autenticação:', error);
+            Alert.alert('Erro', 'Ocorreu um erro durante a autenticação.');
+        }
+    };
 
 
     const renderItem = ({ item }) => (
@@ -141,6 +164,7 @@ const copyFile = async (fileContent) => {
         </Pressable>
     );
 
+     
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <SttsBar />
@@ -201,7 +225,8 @@ const copyFile = async (fileContent) => {
             />
         </View>
     );
-};
+
+}
 
 const styles = StyleSheet.create({
     container: {

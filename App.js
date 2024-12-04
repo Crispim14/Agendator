@@ -1,7 +1,7 @@
 // App.js
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';   
 import { ThemeProvider, useTheme } from './ThemeContext'; // Use apenas o ThemeProvider e useTheme
 import HomeScreen from './screens/HomeScreen';
 import AddScheduleScreen from './screens/AddScheduleScreen';
@@ -12,7 +12,8 @@ import ServiceListScreen from './screens/ServiceListScreen';
 import ServiceProviderListScreen from './screens/ServiceProviderListScreen';
 import ServiceProviderEditScreen from './screens/ServiceProviderEditScreen';
 import { useFonts } from 'expo-font';
-import Reports from './screens/Reports';
+import ReportsScreen from './screens/ReportsScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -80,7 +81,9 @@ export default function App() {
                     <Drawer.Screen name="ServiceList" component={ServiceListScreen} options={{ title: 'Lista de Serviços' }} />
                     <Drawer.Screen name="ServiceProviderList" component={ServiceProviderListScreen} options={{ title: 'Lista de Prestadores de Serviços' }} />
 
-                    <Drawer.Screen name="Reports" component={Reports} options={{ title: 'Relatórios' }} />
+                    <Drawer.Screen name="ReportsScreen" component={ReportsScreen} options={{ title: 'Relatórios' }} />
+
+                    <Drawer.Screen name="SettingsScreen" component={SettingsScreen} options={{ title: 'Configurações' }} />
                 </Drawer.Navigator>
             </NavigationContainer>
         </ThemeProvider>

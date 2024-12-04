@@ -59,6 +59,23 @@ const openDatabase = async () => {
 
 
 
+export const dropTable = async () => {
+  try {
+    const db = await openDatabase();
+    await db.execAsync(`
+   DROP TABLE IF  EXISTS schedules;
+   DROP TABLE IF  EXISTS services;
+   DROP TABLE IF  EXISTS servicesProvider;
+   DROP TABLE IF  EXISTS relatesServicesProvider;
+   DROP TABLE IF  EXISTS relatesServiceSchedule;
+
+        `);
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 
 export const createTable = async () => {
