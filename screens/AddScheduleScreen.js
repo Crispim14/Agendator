@@ -8,6 +8,7 @@ import BtnPadraoMenor from '../components/BtnPadraoMenor';
 import ServicePicker from './ServicePicker';
 import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
 import CheckboxPadrao from "../components/CheckboxPadrao";
+import Checkbox from 'expo-checkbox'; // Importando o Checkbox do expo-checkbox
 
 function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
@@ -29,6 +30,7 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [idServicos, setIdServicos] = useState([]);
+    const [isAtendiment, setAtendiment] = useState(schedule.atendiment === 1);
 
     const [msgError, setMsgError] = useState({
         nameError: '',
@@ -64,6 +66,17 @@ const AddScheduleScreen = ({ route, navigation }) => {
     };
 
 
+    const handleAtendiment = () => {
+        setAtendiment(prev => {
+        
+            const newValue = !prev;
+           
+            return newValue;
+        });
+    };
+
+
+
 
 
     const handleCheckboxChangeColaboradores = (id) => {
@@ -74,20 +87,6 @@ const AddScheduleScreen = ({ route, navigation }) => {
     };
 
 
-
-    const handleValuesChange = (index, serviceId, providerId, affinity) => {
-        const newPickers = [...pickers];
-        newPickers[index] = { serviceId, providerId, affinity };
-        setPickers(newPickers);
-    };
-
-    const addPicker = () => {
-        setPickers([...pickers, { serviceId: '', providerId: '', affinity: 1 }]);
-    };
-
-    const removePicker = (index) => {
-        setPickers(pickers.filter((_, i) => i !== index));
-    };
 
     const clearErrors = () => {
         setMsgError({
@@ -138,10 +137,12 @@ const AddScheduleScreen = ({ route, navigation }) => {
             const [hours, minutes] = time.split(':').map(Number);
             selectedDateTime.setHours(hours);
             selectedDateTime.setMinutes(minutes);
-
+          
             const schedulesOnDate = await getSchedules(date.toISOString().split('T')[0]);
             const isConflict = schedulesOnDate.some(s => s.time === time && s.id !== schedule.id);
-            const newSchedule = { name, phone, date: date.toISOString().split('T')[0], time, services: pickers, professional };
+            console.log(`isAtendiment`)
+            console.log(isAtendiment)
+            const newSchedule = { name, phone, date: date.toISOString().split('T')[0], time, services: pickers, professional, atendiment:   isAtendiment  ? 1 : 0 };
 
             if (isConflict) {
                 Alert.alert(
@@ -239,16 +240,12 @@ const AddScheduleScreen = ({ route, navigation }) => {
     const shareSchedule =   async () => {
         
 
-    const msg = await getMessage() ;
-
-
-
-        let msg1  = " Olá [nome do cliente], você possui agendado o serviço [serviço agendado] às [hora do serviço] do dia [data do agendamento] na [empresa] "
-        msg1 =  msg1.replace(`[nome do cliente]`, name);
-        msg1 = msg1.replace("[hora do serviço]", time);
-        msg1 = msg1.replace(`[data do agendamento]`, date.toLocaleDateString('pt-BR'));
-
-            
+    let msg1 = await getMessage() ;
+     
+    msg1.standard_message =  msg1.standard_message.replace(`[nome do cliente]`, name);
+    msg1.standard_message = msg1.standard_message.replace("[hora do serviço]", time);
+    msg1.standard_message = msg1.standard_message.replace(`[data do agendamento]`, date.toLocaleDateString('pt-BR'));
+     
 
                     try {
                         const result = await Share.share({
@@ -357,6 +354,17 @@ const AddScheduleScreen = ({ route, navigation }) => {
 
 
             <BtnPadraoMenor propOnPress={saveSchedule}>Salvar</BtnPadraoMenor>
+
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                <Checkbox
+                    value={isAtendiment}
+                    onValueChange={handleAtendiment}
+                    color={isAtendiment ? 'green' : theme.text}
+                />
+                <Txt text="Atendimento realizado" />
+            </View>
+
             {schedule.id &&
 
                 <View>

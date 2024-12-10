@@ -10,6 +10,7 @@ import BtnPadrao from '../components/BtnPadrao';
 import SttsBar from '../components/SttsBar';
 import { useTheme } from '../ThemeContext';
 import * as LocalAuthentication from 'expo-local-authentication';
+import ModalPadrao from '../components/ModalPadrao';
 //import * as FileSystem from 'expo-file-system';
 //import RNFS from 'react-native-fs'; // Importar o RNFS corretamente
 //import RNFS from 'react-native-fs';
@@ -24,6 +25,7 @@ const HomeScreen = ({ navigation }) => {
     const [date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
 
 
@@ -118,6 +120,8 @@ const copyFile = async (fileContent) => {
     useEffect(() => {
         const fetchSchedules = async () => {
             try {
+
+                
                 const schedulesData = await getDataSchedules(selectedDate);
                 setSchedules(schedulesData);
             } catch (error) {
@@ -127,10 +131,14 @@ const copyFile = async (fileContent) => {
 
         const verifyAcess = async () => {
             try {
+            
                 const acess = await getAcess();
+                console.log(`acess`)
+
+                console.log(acess)
                  if(!acess || acess.length === 0){
-
-
+                    setModalVisible(true)
+                
             await addFirstAccess(); 
 
                  }else{
@@ -171,6 +179,14 @@ const copyFile = async (fileContent) => {
     };
 
 
+    const handleWelcome = async () => {
+        const welcome = await AsyncStorage.getItem('welcome');
+        if(!welcome){
+          setModalVisible(true);
+          await AsyncStorage.setItem('welcome', 'true');
+        }
+      }
+
     const renderItem = ({ item }) => (
         <Pressable onPress={() => navigation.navigate('AddSchedule', { schedule: item })}>
             <View style={[styles.itemContainer, { backgroundColor: new Date(`${item.date}T${item.time}`) < new Date() ? 'red' : '#0CABA8' }]}>
@@ -183,6 +199,14 @@ const copyFile = async (fileContent) => {
      
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
+
+
+<ModalPadrao
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            navigation={navigation}
+          />
+            
             <SttsBar />
 
             {showDatePicker && (
@@ -221,6 +245,9 @@ const copyFile = async (fileContent) => {
                 onPress={toggleTheme}
                 color={theme.text}
             />
+
+
+            
         </View>
     );
 

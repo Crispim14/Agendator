@@ -8,6 +8,7 @@ import Checkbox from 'expo-checkbox'; // Importando o Checkbox do expo-checkbox
 import { useTheme } from '../ThemeContext'; // Importa o contexto de tema
 
 
+
 function showToast(text) {
     ToastAndroid.show(text, ToastAndroid.SHORT);
 }
@@ -28,12 +29,40 @@ const ServiceEditScreen = ({ route, navigation }) => {
 
 
     useEffect(() => {
-        if (!service.id) {
+        console.log(!service.id)
+     
+    }, []);
+    
+    
 
+
+    const handleFocus = () => {
+        console.log("Tela ServiceEditScreen foi exibida!");
+        // Aqui você pode colocar qualquer lógica que deseja rodar ao focar na tela
+    };
+
+    // Hook para acionar a função sempre que a tela for focada
+    useFocusEffect(
+        React.useCallback(() => {
+            handleFocus();
+            
+            // Retorne uma função de "limpeza" se necessário
+            return () => {
+                console.log("Tela ServiceEditScreen foi desfoque!");
+            };
+        }, [])
+    );
+
+    useEffect(() => {
+  
+        if (!service.id) {
+            clearFormData();
         } else {
+          
             setName(service.name);
             setDescription(service.description);
             setIsFavorite(service.favorite === 1);
+   
         }
     }, [service]);
 
@@ -42,6 +71,7 @@ const ServiceEditScreen = ({ route, navigation }) => {
         setDescription('');
         setIsFavorite(false); 
     };
+
 
 
     const handleFavorite = () => {

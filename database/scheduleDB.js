@@ -84,13 +84,14 @@ export const createTable = async () => {
     await db.execAsync(`
             PRAGMA journal_mode = WAL;
 
-          
+     
             CREATE TABLE IF NOT EXISTS schedules (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               name TEXT NOT NULL,
               phone TEXT NOT NULL,
               date TEXT NOT NULL,
-              time TEXT NOT NULL
+              time TEXT NOT NULL, 
+              atendiment BIT DEFAULT 0
           );
             
           CREATE TABLE IF NOT EXISTS services (
@@ -219,16 +220,20 @@ VALUES ('Diagnóstico eletrônico', 'Verificação dos sistemas eletrônicos do 
 // Função para adicionar um agendamento
 export const addSchedule = async (schedule) => {
   try {
+
+    console.log(`schedule`)
+    console.log(schedule)
+    
+
     const db = await openDatabase();
     const result = await db.runAsync(
-      "INSERT INTO schedules (name, phone, date, time) VALUES (?, ?, ?, ?)",
+      "INSERT INTO schedules (name, phone, date, time,atendiment ) VALUES (?, ?, ?, ?,?)",
       [
         schedule.name,
         schedule.phone,
         schedule.date,
         schedule.time,
-        schedule.service,
-        schedule.professional,
+        schedule.atendiment
       ]
     );
     return result;
