@@ -56,6 +56,19 @@ const AddScheduleScreen = ({ route, navigation }) => {
     }, []);
 
 
+    
+    const removeSchedule = async () => {
+        try {
+           
+
+    await deleteSchedule(schedule.id)
+
+           
+        } catch (error) {
+            console.error('Erroao deletar  agendamento:', error);
+            Alert.alert('Erro', 'Ocorreu um erro ao deletar  o agendamento.');
+        }
+    };
 
 
     const handleCheckboxChange = (id) => {
@@ -190,6 +203,10 @@ const AddScheduleScreen = ({ route, navigation }) => {
         }
     };
 
+
+
+
+    
     const saveRelatedServices = async (scheduleID) => {
         try {
 
