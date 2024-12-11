@@ -18,16 +18,20 @@ import ModalPadrao from '../components/ModalPadrao';
 // import * as FileSystem from 'expo-file-system';
 
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route }) => {
+     const modal = route.params?.modal || {};
     const { theme, toggleTheme } = useTheme(); // Obtém o tema e a função para alternar o tema
     const [schedules, setSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible, setModalVisible] = useState(modal.active?  true :  false);
 
 
+    console.log('modal.active')
+    console.log(modal.active)
+console.log(modalVisible)
 
     const pickDocument  = async () => {
         try {
@@ -116,6 +120,8 @@ const copyFile = async (fileContent) => {
 
     
     };
+
+      
 
     useEffect(() => {
         const fetchSchedules = async () => {

@@ -10,9 +10,7 @@
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
-      
-      
-    } ,
+    },
     "plugins": [
       [
         "expo-local-authentication",
@@ -20,7 +18,7 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ]
-    ], 
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -29,11 +27,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.crispim14.testeAgendator"
+      "package": "com.crispim14.testeAgendator",
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "79b9dff0-f197-4eaf-a0ce-b88f4951d51a"
+      }
     }
   }
 }
-

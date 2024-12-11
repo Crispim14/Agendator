@@ -63,11 +63,12 @@ export const dropTable = async () => {
   try {
     const db = await openDatabase();
     await db.execAsync(`
-   DROP TABLE IF  EXISTS schedules;
-   DROP TABLE IF  EXISTS services;
-   DROP TABLE IF  EXISTS servicesProvider;
-   DROP TABLE IF  EXISTS relatesServicesProvider;
-   DROP TABLE IF  EXISTS relatesServiceSchedule;
+   DROP TABLE IF EXISTS schedules;
+   DROP TABLE IF EXISTS services;
+   DROP TABLE IF EXISTS servicesProvider;
+   DROP TABLE IF EXISTS relatesServicesProvider;
+   DROP TABLE IF EXISTS relatesServiceSchedule;
+   DROP TABLE IF EXISTS settings;
 
         `);
   } catch (error) {
@@ -776,17 +777,6 @@ export const addFirstAccess = async () => {
   }
 };
 
-export const deleteFirstAccess = async () => {
-  try {
-    const db = await openDatabase();
-    const result = await db.runAsync(
-      `DELETE FROM settings; `
-    );
-    return result;
-  } catch (error) {
-    throw error;
-  }
-};
 
 export const getMessage = async () => {
   try {

@@ -79,7 +79,7 @@ export default function App() {
                         }}
                     />
                     <Drawer.Screen name="ServiceList" component={ServiceListScreen} options={{ title: 'Lista de Serviços' }} />
-                    <Drawer.Screen name="ServiceProviderList" component={ServiceProviderListScreen} options={{ title: 'Lista de Prestadores de Serviços' }} />
+                    <Drawer.Screen name="ServiceProviderList" component={ServiceProviderListScreen} options={{ title: 'Lista de Colaboradores' }} />
 
                     <Drawer.Screen name="ReportsScreen" component={ReportsScreen} options={{ title: 'Relatórios' }} />
 
