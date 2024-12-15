@@ -1,0 +1,5 @@
+1 - npm install -g expo-cli eas-cli
+2 - npm install expo-local-authentication
+3 - npm install expo-build-properties
+4 - eas login
+5 - eas build --platform android
