@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "testeAgendator",
+    "name": "Agendator",
     "slug": "testeAgendator",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,6 +17,15 @@
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.8.22",
+            "minSdkVersion": 24
+          }
+        }
       ]
     ],
     "ios": {
@@ -27,7 +36,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.crispim14.testeAgendator",
+      "package": "com.albuquerque.g.testeAgendator",
       "permissions": [
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"
@@ -38,8 +47,8 @@
     },
     "extra": {
       "eas": {
-        "projectId": "79b9dff0-f197-4eaf-a0ce-b88f4951d51a"
-      }
-    }
-  }
+        "projectId": "1a433c92-f9ef-474e-83ec-0154e3771b4e"
+   }
+}
+}
 }
